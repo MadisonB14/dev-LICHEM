@@ -24,147 +24,181 @@
 //TINKER routines
 void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
 {
-  //Parses TINKER parameter files to find multipoles and local frames
-  string dummy; //Generic string
-  fstream inFile,outFile; //Generic file streams
-  stringstream call; //Stream for system calls and reading/writing files
-  //Create TINKER xyz file from the structure
-  call.str("");
-  call << "LICHM_" << bead << ".xyz";
-  outFile.open(call.str().c_str(),ios_base::out);
-  //Write atoms to the xyz file
-  outFile << Natoms << '\n';
-  for (int i=0;i<Natoms;i++)
+//Start: Madison
+  if(QMMMOpts.useSCFPol)
   {
-    //Write XYZ data
-    outFile << setw(6) << (QMMMData[i].id+1);
-    outFile << " ";
-    outFile << setw(3) << QMMMData[i].MMTyp;
-    outFile << " ";
-    outFile << LICHEMFormFloat(QMMMData[i].P[bead].x,16);
-    outFile << " ";
-    outFile << LICHEMFormFloat(QMMMData[i].P[bead].y,16);
-    outFile << " ";
-    outFile << LICHEMFormFloat(QMMMData[i].P[bead].z,16);
-    outFile << " ";
-    outFile << setw(4) << QMMMData[i].numTyp;
-    for (unsigned int j=0;j<QMMMData[i].bonds.size();j++)
+    call.str("");
+    call << "xyzfile" << ".uind"; //tinker generates the .uind file based on the name of the xyzfile you give it
+    inFile.open(call.str().c_str(),ios_base::in);
+    while (!inFile.eof())
     {
-      outFile << " "; //Avoids trailing spaces
-      outFile << setw(6) << (QMMMData[i].bonds[j]+1);
-    }
-    outFile << '\n';
-  }
-  outFile.flush();
-  outFile.close();
-  //Write poledit input
-  call.str("");
-  call << "LICHM_" << bead << ".txt";
-  outFile.open(call.str().c_str(),ios_base::out);
-  outFile << "2" << '\n';
-  outFile << "LICHM_" << bead << ".xyz" << '\n';
-  outFile << '\n';
-  outFile.flush();
-  outFile.close();
-  //Run poledit
-  call.str("");
-  call << "poledit < LICHM_" << bead << ".txt > LICHM_" << bead << ".out";
-  globalSys = system(call.str().c_str());
-  //Extract multipole frames
-  call.str("");
-  call << "LICHM_" << bead << ".out";
-  inFile.open(call.str().c_str(),ios_base::in);
-  while (!inFile.eof())
-  {
-    //Parse file line by line
-    getline(inFile,dummy);
-    stringstream line(dummy);
-    line >> dummy;
-    if (dummy == "Multipoles")
-    {
+      //Parse file line by line
+      //Typical format of the induced dipole file is total number of atoms on first line
+      //Next line begins with atom number, atom type and the dipoles for x, y and z
+      getline(inFile,dummy);
+      stringstream line(dummy);
       line >> dummy;
-      //Second check
-      if (dummy == "With")
+      for (int i=0;i<Natoms;i++)
+      {
+        inFile >> atomNum; //don't think I care about this
+        inFile >> atomType; //don't think I care about this
+        inFile >> QMMMData[i].MP[bead].IDipx;
+        inFile >> QMMMData[i].MP[bead].IDipy;
+        inFile >> QMMMData[i].MP[bead].IDipz;
+      }
+    inFile.close();
+    return;
+    };
+//End: Madison
+  }
+  else
+  {
+    //Parses TINKER parameter files to find multipoles and local frames
+    string dummy; //Generic string
+    fstream inFile,outFile; //Generic file streams
+    stringstream call; //Stream for system calls and reading/writing files
+    //Create TINKER xyz file from the structure
+    call.str("");
+    call << "LICHM_" << bead << ".xyz";
+    outFile.open(call.str().c_str(),ios_base::out);
+    //Write atoms to the xyz file
+    outFile << Natoms << '\n';
+    for (int i=0;i<Natoms;i++)
+    {
+      //Write XYZ data
+      outFile << setw(6) << (QMMMData[i].id+1);
+      outFile << " ";
+      outFile << setw(3) << QMMMData[i].MMTyp;
+      outFile << " ";
+      outFile << LICHEMFormFloat(QMMMData[i].P[bead].x,16);
+      outFile << " ";
+      outFile << LICHEMFormFloat(QMMMData[i].P[bead].y,16);
+      outFile << " ";
+      outFile << LICHEMFormFloat(QMMMData[i].P[bead].z,16);
+      outFile << " ";
+      outFile << setw(4) << QMMMData[i].numTyp;
+      for (unsigned int j=0;j<QMMMData[i].bonds.size();j++)
+      {
+        outFile << " "; //Avoids trailing spaces
+        outFile << setw(6) << (QMMMData[i].bonds[j]+1);
+      }
+      outFile << '\n';
+    }
+    outFile.flush();
+    outFile.close();
+    //Write poledit input
+    //Poledit is part of Tinker and is used for manimpulating
+    //and processing polarizable atomic multipole models
+    call.str("");
+    call << "LICHM_" << bead << ".txt";
+    outFile.open(call.str().c_str(),ios_base::out);
+    outFile << "2" << '\n';
+    outFile << "LICHM_" << bead << ".xyz" << '\n';
+    outFile << '\n';
+    outFile.flush();
+    outFile.close();
+    //Run poledit based on whatever bead you are on
+    call.str("");
+    call << "poledit < LICHM_" << bead << ".txt > LICHM_" << bead << ".out";
+    globalSys = system(call.str().c_str());
+    //Extract multipole frames
+    call.str("");
+    call << "LICHM_" << bead << ".out";
+    inFile.open(call.str().c_str(),ios_base::in);
+    while (!inFile.eof())
+    {
+      //Parse file line by line
+      getline(inFile,dummy);
+      stringstream line(dummy);
+      line >> dummy;
+      if (dummy == "Multipoles")
       {
         line >> dummy;
-        //Third check
-        if (dummy == "Altered")
+        //Second check
+        if (dummy == "With")
         {
-          //Read multipoles and frames
-          for (int i=0;i<Natoms;i++)
+          line >> dummy;
+          //Third check
+          if (dummy == "Altered")
           {
-            //Clear junk
-            getline(inFile,dummy);
-            getline(inFile,dummy);
-            getline(inFile,dummy);
-            //Check if poles exist
-            getline(inFile,dummy);
-            stringstream line(dummy);
-            line >> dummy;
-            if (dummy == "Local")
+            //Read multipoles and frames
+            for (int i=0;i<Natoms;i++)
             {
-              //Collect definition
-              line >> dummy >> QMMMData[i].MP[bead].type;
-              line >> QMMMData[i].MP[bead].atom1;
-              line >> QMMMData[i].MP[bead].atom2;
-              line >> QMMMData[i].MP[bead].atom3;
-              //Correct numbering
-              QMMMData[i].MP[bead].atom1 -= 1;
-              QMMMData[i].MP[bead].atom2 -= 1;
-              QMMMData[i].MP[bead].atom3 -= 1;
-              //Collect charge
-              inFile >> dummy >> QMMMData[i].MP[bead].q;
-              //Collect static dipole
-              inFile >> dummy;
-              inFile >> QMMMData[i].MP[bead].Dx;
-              inFile >> QMMMData[i].MP[bead].Dy;
-              inFile >> QMMMData[i].MP[bead].Dz;
-              //Initialize induced dipole
-              QMMMData[i].MP[bead].IDx = 0;
-              QMMMData[i].MP[bead].IDy = 0;
-              QMMMData[i].MP[bead].IDz = 0;
-              //Collect quadrupole
-              inFile >> dummy;
-              inFile >> QMMMData[i].MP[bead].Qxx;
-              inFile >> QMMMData[i].MP[bead].Qxy;
-              inFile >> QMMMData[i].MP[bead].Qyy;
-              inFile >> QMMMData[i].MP[bead].Qxz;
-              inFile >> QMMMData[i].MP[bead].Qyz;
-              inFile >> QMMMData[i].MP[bead].Qzz;
+              //Clear junk
+              getline(inFile,dummy);
+              getline(inFile,dummy);
+              getline(inFile,dummy);
+              //Check if poles exist
+              getline(inFile,dummy);
+              stringstream line(dummy);
+              line >> dummy;
+              if (dummy == "Local")
+              {
+                //Collect definition
+                line >> dummy >> QMMMData[i].MP[bead].type;
+                line >> QMMMData[i].MP[bead].atom1;
+                line >> QMMMData[i].MP[bead].atom2;
+                line >> QMMMData[i].MP[bead].atom3;
+                //Correct numbering
+                QMMMData[i].MP[bead].atom1 -= 1;
+                QMMMData[i].MP[bead].atom2 -= 1;
+                QMMMData[i].MP[bead].atom3 -= 1;
+                //Collect charge
+                inFile >> dummy >> QMMMData[i].MP[bead].q;
+                //Collect static dipole
+                inFile >> dummy;
+                inFile >> QMMMData[i].MP[bead].Dx;
+                inFile >> QMMMData[i].MP[bead].Dy;
+                inFile >> QMMMData[i].MP[bead].Dz;
+                //Initialize induced dipole
+                QMMMData[i].MP[bead].IDx = 0;
+                QMMMData[i].MP[bead].IDy = 0;
+                QMMMData[i].MP[bead].IDz = 0;
+                //Collect quadrupole
+                inFile >> dummy;
+                inFile >> QMMMData[i].MP[bead].Qxx;
+                inFile >> QMMMData[i].MP[bead].Qxy;
+                inFile >> QMMMData[i].MP[bead].Qyy;
+                inFile >> QMMMData[i].MP[bead].Qxz;
+                inFile >> QMMMData[i].MP[bead].Qyz;
+                inFile >> QMMMData[i].MP[bead].Qzz;
+              }
+              else
+              {
+                //Initialize the "blank" multipole
+                QMMMData[i].MP[bead].type = "None";
+                QMMMData[i].MP[bead].Dx = 0;
+                QMMMData[i].MP[bead].Dy = 0;
+                QMMMData[i].MP[bead].Dz = 0;
+                QMMMData[i].MP[bead].IDx = 0;
+                QMMMData[i].MP[bead].IDy = 0;
+                QMMMData[i].MP[bead].IDz = 0;
+                QMMMData[i].MP[bead].Qxx = 0;
+                QMMMData[i].MP[bead].Qyy = 0;
+                QMMMData[i].MP[bead].Qzz = 0;
+                QMMMData[i].MP[bead].Qxy = 0;
+                QMMMData[i].MP[bead].Qxz = 0;
+                QMMMData[i].MP[bead].Qyz = 0;
+              }
+              //Clear more junk
+              getline(inFile,dummy);
             }
-            else
-            {
-              //Initialize the "blank" multipole
-              QMMMData[i].MP[bead].type = "None";
-              QMMMData[i].MP[bead].Dx = 0;
-              QMMMData[i].MP[bead].Dy = 0;
-              QMMMData[i].MP[bead].Dz = 0;
-              QMMMData[i].MP[bead].IDx = 0;
-              QMMMData[i].MP[bead].IDy = 0;
-              QMMMData[i].MP[bead].IDz = 0;
-              QMMMData[i].MP[bead].Qxx = 0;
-              QMMMData[i].MP[bead].Qyy = 0;
-              QMMMData[i].MP[bead].Qzz = 0;
-              QMMMData[i].MP[bead].Qxy = 0;
-              QMMMData[i].MP[bead].Qxz = 0;
-              QMMMData[i].MP[bead].Qyz = 0;
-            }
-            //Clear more junk
-            getline(inFile,dummy);
           }
         }
       }
     }
+    inFile.close();
+    //Clean up files
+    call.str("");
+    call << "rm -f LICHM_" << bead << ".txt LICHM_";
+    call << bead << ".key LICHM_" << bead << ".xyz LICHM_";
+    call << bead << ".out";
+    globalSys = system(call.str().c_str());
+    return;
   }
-  inFile.close();
-  //Clean up files
-  call.str("");
-  call << "rm -f LICHM_" << bead << ".txt LICHM_";
-  call << bead << ".key LICHM_" << bead << ".xyz LICHM_";
-  call << bead << ".out";
-  globalSys = system(call.str().c_str());
-  return;
+
 };
+
 
 void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
 {
@@ -387,13 +421,30 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
       newPoles.Dz += QMMMData[i].MP[bead].Dx*vecX(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dy*vecY(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dz*vecZ(2);
-      //Add induced dipoles (Already in global frame)
-      newPoles.Dx += QMMMData[i].MP[bead].IDx;
-      newPoles.Dy += QMMMData[i].MP[bead].IDy;
-      newPoles.Dz += QMMMData[i].MP[bead].IDz;
-      newPoles.IDx = 0;
-      newPoles.IDy = 0;
-      newPoles.IDz = 0;
+//Start: Madison
+      if(QMMMOpts.useSCFPol)
+      {
+        //Here, I am adding the induced dipoles that were gathered from
+        //the tinker input file, to the 3 dipole terms.
+        //I think I have to re-initiate the value to 0.
+        newPoles.Dx += QMMMData[i].MP[bead].IDipx
+        newPoles.Dy += QMMMData[i].MP[bead].IDipy
+        newPoles.Dz += QMMMData[i].MP[bead].IDipz
+        newPoles.IDx = 0;
+        newPoles.IDy = 0;
+        newPoles.IDz = 0;
+      }
+      else
+      {
+        //Add induced dipoles (Already in global frame)
+        newPoles.Dx += QMMMData[i].MP[bead].IDx;
+        newPoles.Dy += QMMMData[i].MP[bead].IDy;
+        newPoles.Dz += QMMMData[i].MP[bead].IDz;
+        newPoles.IDx = 0;
+        newPoles.IDy = 0;
+        newPoles.IDz = 0;
+      }
+//End: Madison
       //Rotate quadrupoles (This looks awful, but it works)
       //NB: This is a hard coded matrix rotation
       newPoles.Qxx = 0; //XX component
@@ -1407,4 +1458,3 @@ OctCharges SphHarm2Charges(RedMPole pole)
   //Return
   return PCGrid;
 };
-

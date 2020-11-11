@@ -605,7 +605,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         //set all atoms to false
         for (int i=0;i<Natoms;i++){
             QMMMData[i].NEBActive = false; //false
-        }      
+        }
         //Read the list of atoms to include in QSM tangents
         int numActive;
         regionFile >> numActive;
@@ -661,6 +661,27 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         PBCon = 1;
       }
     }
+    //START: Madison
+    else if (keyword == "SCF_polarization:")
+    {
+     //default is no
+     regionFile >> dummy;
+     LICHEMLowerText(dummy);
+     if ((dummy == "yes") or (dummy == "true"))
+     {
+       // forcefield for MM must be AMOEBA to do full polarization
+       if (AMOEBA = 1)
+       {
+         QMMMOpts.useSCFPol = true;
+       }
+       else
+       {
+         logile << "Warning: MM force field must be AMOEBA to use SCF polarization.";
+         logfile << '\n' << '\n';
+       }
+     }
+    }
+    //END: Madison
     //START: Hatice GOKCAN
     else if (keyword == "restrain_mm:")
     {
@@ -674,7 +695,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
     }
     else if (keyword == "force_constant:")
     {
-        //default is 100.0 
+        //default is 100.0
         regionFile >> QMMMOpts.restrConst;
     }
     else if (keyword == "qm_rms_force_tol:"){
@@ -713,7 +734,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         }
     }
     //END: Hatice GOKCAN
-    
+
     else if (keyword == "potential_type:")
     {
       //Set QM, MM, and QMMM options
@@ -1045,7 +1066,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
     }
     //Set initial transition state for reaction pathways
     //Start: Hatice
-    //if (NEBSim) 
+    //if (NEBSim)
     if (NEBSim or QSMSim)
     //End: Hatice
     {
@@ -1093,8 +1114,8 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
       }
     }
   }
-  //START: Hatice GOKCAN 
-  //For QSM 
+  //START: Hatice GOKCAN
+  //For QSM
   //Read initial structures for all beads or create new ones if QSM simulation
   //if (CheckFile("QSMBeadStruct.xyz") and (!GauExternal))
   if (CheckFile("BeadStartStruct.xyz") and (!GauExternal))
@@ -1107,7 +1128,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
     //beadfile.open("QSMBeadStruct.xyz",ios_base::in);
     beadfile.open("BeadStartStruct.xyz",ios_base::in);
 
-    if(QSMSim){ 
+    if(QSMSim){
       //Read and discard number of atoms
       int AtTest = 0;
       beadfile >> AtTest;
@@ -1155,7 +1176,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
             beadfile >> QMMMData[i].P[p].z;
         }
       }
-     
+
       //if Nqsm=QMMMOpts.NBeads then whole path is present
       if(QMMMOpts.Nqsm==QMMMOpts.NBeads){
         //Read XYZ coordinates for beads
@@ -1201,7 +1222,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
           beadfile >> QMMMData[i].P[j].z;
         }
       }
-    } 
+    }
   }
   else if (NEBSim or QSMSim)
   {
@@ -1964,7 +1985,7 @@ void LICHEMPrintSettings(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
       logFile << " Max. force: " << LICHEMFormFloat(QMMMOpts.QMMaxForceTol,8);
       logFile << " Hartree/bohr" << '\n';
     }
-    
+
     if (Nmm > 0)
     {
       logFile << '\n';
@@ -2011,4 +2032,3 @@ void LICHEMPrintSettings(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   logFile.flush(); //Flush for output being redirected to a file
   return;
 };
-

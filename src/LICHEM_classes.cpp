@@ -299,6 +299,9 @@ QMMMSettings::QMMMSettings()
   perOpt=maxOptSteps;
   perQM=MaxQMSteps;
   //End: Hatice
+  //Start: Madison
+  useSCFPol = false;
+  //End: Madison
   return;
 };
 

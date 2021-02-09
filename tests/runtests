@@ -1,0 +1,663 @@
+#!/usr/bin/python
+import subprocess
+import time
+import sys
+import os
+startTime = time.time()
+TTxtLen = 30
+passCt = 0
+failCt = 0
+updateResults = 0
+forceAll = 0
+class ClrSet:
+  Norm = '\033[0m'
+  Red = '\033[91m'
+  Bold = '\033[1m'
+  Green = '\033[92m'
+  Blue = '\033[94m'
+  Cyan = '\033[36m'
+  TFail = Bold+Red
+  TPass = Bold+Green
+  Reset = Norm
+def RunLICHEM(xName,rName,cName):
+  cmd = "lichem -n "
+  cmd += str(Ncpus)
+  cmd += " "
+  cmd += "-x "
+  cmd += xName
+  cmd += " "
+  cmd += "-r "
+  cmd += rName
+  cmd += " "
+  cmd += "-c "
+  cmd += cName
+  cmd += " "
+  cmd += "-o trash.xyz "
+  cmd += "-l tests.out "
+  cmd += "2>&1"
+  subprocess.call(cmd,shell=True)
+  return
+def CleanFiles():
+  cleanCmd = "rm -f"
+  cleanCmd += " BASIS tests.out trash.xyz"
+  cleanCmd += " BeadStartStruct.xyz BurstStruct.xyz"
+  cleanCmd += " tinker.key"
+  cleanCmd += ""
+  cleanCmd += " *.chk"
+  cleanCmd += " timer.* psi.* *.32 *.180"
+  cleanCmd += " *.movecs"
+  subprocess.call(cleanCmd,shell=True)
+  return
+def RecoverEnergy(txtLabel,itemNum):
+  cmd = ""
+  cmd += "grep -e "
+  cmd += '"'
+  cmd += txtLabel
+  cmd += ' "'
+  cmd += " tests.out "
+  cmd += "| tail -1 "
+  savedResult = "Crashed..."
+  try:
+    finalEnergy = subprocess.check_output(cmd,shell=True)
+    finalEnergy = finalEnergy.decode('utf-8').split()
+    finalEnergy = float(finalEnergy[itemNum])
+    savedResult = "Energy: "+str(finalEnergy)
+    finalEnergy = round(finalEnergy,3)
+  except:
+    finalEnergy = 0.0
+  return finalEnergy,savedResult
+def RecoverFreqs():
+  cmd = ""
+  cmd += "sed '/Usage Statistics/,$d' tests.out | "
+  cmd += "sed -n '/Frequencies:/,$p' | "
+  cmd += "sed '/Frequencies:/d'"
+  try:
+    freqList = []
+    tmpFreqs = subprocess.check_output(cmd,shell=True)
+    tmpFreqs = tmpFreqs.decode('utf-8').strip()
+    tmpFreqs = tmpFreqs.split()
+    for freqVal in tmpFreqs:
+      freqList.append(float(freqVal))
+  except:
+    freqList = []
+  return freqList
+def AddPass(tName,testPass,txtLn):
+  global passCt
+  global failCt
+  global TTxtLen
+  tName = " "+tName
+  deltaTxt = TTxtLen-len(tName)
+  if (deltaTxt > 0):
+    for i in range(deltaTxt):
+      tName += " "
+  else:
+    TTxtLen -= deltaTxt
+    TTxtLen += 1
+    deltaTxt = TTxtLen-len(tname)
+    for i in range(deltaTxt):
+      tName += " "
+  txtLn += tName
+  if (testPass == 1):
+    txtLn += ClrSet.TPass+"Pass"+ClrSet.Reset+","
+    passCt += 1
+  else:
+    txtLn += ClrSet.TFail+"Fail"+ClrSet.Reset+","
+    failCt += 1
+  return txtLn
+def AddRunTime(txtLn):
+  cmd = ""
+  cmd += "grep -e"
+  cmd += ' "Total wall time: " '
+  cmd += "tests.out"
+  try:
+    runTime = subprocess.check_output(cmd,shell=True)
+    runTime = runTime.decode('utf-8').split()
+    runTime = " "+('%.4f'%round(float(runTime[3]),4))+" "+runTime[4]
+  except:
+    runTime = " N/A"
+  txtLn += runTime
+  return txtLn
+def AddEnergy(devOpt,txtLn,enVal):
+  if (devOpt == 1):
+    txtLn += ", "
+    txtLn += enVal
+  return txtLn
+line = '\n'
+line += "***************************************************"
+line += '\n'
+line += "*                                                 *"
+line += '\n'
+line += "*   LICHEM: Layered Interacting CHEmical Models   *"
+line += '\n'
+line += "*                                                 *"
+line += '\n'
+line += "*        Symbiotic Computational Chemistry        *"
+line += '\n'
+line += "*                                                 *"
+line += '\n'
+line += "***************************************************"
+line += '\n'
+print(line)
+dryRun = 0
+allTests = 0
+if (len(sys.argv) == 3):
+  if ((sys.argv[2]).lower() == "all"):
+    allTests = 1
+if (len(sys.argv) < 4):
+  line = ""
+  if (allTests == 0):
+    line += "Usage:"
+    line += '\n'
+    line += " user:$ ./runtests Ncpus All"
+    line += '\n'
+    line += "  or "
+    line += '\n'
+    line += " user:$ ./runtests Ncpus QMPackage MMPackage"
+    line += '\n'
+    line += "  or "
+    line += '\n'
+    line += " user:$ ./runtests Ncpus QMPackage MMPackage dry"
+    line += '\n'
+    line += '\n'
+  line += "LICHEM binary: "
+  cmd = "which lichem"
+  try:
+    LICHEMbin = subprocess.check_output(cmd,shell=True)
+    LICHEMbin = ClrSet.TPass+LICHEMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    LICHEMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += LICHEMbin
+  line += '\n'
+  line += '\n'
+  line += "Available QM wrappers:"
+  line += '\n'
+  line += " PSI4: "
+  cmd = "which psi4"
+  try:
+    QMbin = subprocess.check_output(cmd,shell=True)
+    QMbin = ClrSet.TPass+QMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    QMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += QMbin
+  line += '\n'
+  line += " Gaussian: "
+  cmd = "which g09"
+  try:
+    QMbin = subprocess.check_output(cmd,shell=True)
+    QMbin = ClrSet.TPass+QMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    QMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += QMbin
+  line += '\n'
+  line += " NWChem: "
+  cmd = "which nwchem"
+  try:
+    QMbin = subprocess.check_output(cmd,shell=True)
+    QMbin = ClrSet.TPass+QMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    QMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += QMbin
+  line += '\n'
+  line += '\n'
+  line += "Available MM wrappers:"
+  line += '\n'
+  line += " TINKER: "
+  cmd = "which analyze"
+  try:
+    MMbin = subprocess.check_output(cmd,shell=True)
+    MMbin = ClrSet.TPass+MMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    MMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += MMbin
+  line += '\n'
+  line += " LAMMPS: "
+  cmd = "which lammps"
+  try:
+    MMbin = subprocess.check_output(cmd,shell=True)
+    MMbin = ClrSet.TPass+MMbin.decode('utf-8').strip()+ClrSet.Reset
+  except:
+    MMbin = ClrSet.TFail+"N/A"+ClrSet.Reset
+  line += MMbin
+  line += '\n'
+  print(line)
+  if (allTests == 0):
+    exit(0)
+Ncpus = int(sys.argv[1])
+if (allTests == 0):
+  QMPack = sys.argv[2]
+  QMPack = QMPack.lower()
+  MMPack = sys.argv[3]
+  MMPack = MMPack.lower()
+  if (len(sys.argv) > 4):
+    if ((sys.argv[4]).lower() == "dry"):
+      dryRun = 1
+LICHEMbin = ""
+QMbin = ""
+MMbin = ""
+badLICHEM = 0
+cmd = "which lichem"
+try:
+  LICHEMbin = subprocess.check_output(cmd,shell=True)
+  LICHEMbin = LICHEMbin.decode('utf-8').strip()
+except:
+  LICHEMbin = "N/A"
+  badLICHEM = 1
+if (badLICHEM == 1):
+  line = ""
+  line += "Error: LICHEM binary not found!"
+  line += '\n'
+  print(line)
+  exit(0)
+if (allTests == 0):
+  badQM = 1
+  if ((QMPack == "psi4") or (QMPack == "psi")):
+    QMPack = "PSI4"
+    cmd = "which psi4"
+    try:
+      QMbin = subprocess.check_output(cmd,shell=True)
+      QMbin = QMbin.decode('utf-8').strip()
+    except:
+      QMbin = "N/A"
+    badQM = 0
+  if ((QMPack == "gaussian") or (QMPack == "g09")):
+    QMPack = "Gaussian"
+    cmd = "which g09"
+    try:
+      QMbin = subprocess.check_output(cmd,shell=True)
+      QMbin = QMbin.decode('utf-8').strip()
+    except:
+      QMbin = "N/A"
+    badQM = 0
+  if (QMPack == "nwchem"):
+    QMPack = "NWChem"
+    cmd = "which nwchem"
+    try:
+      QMbin = subprocess.check_output(cmd,shell=True)
+      QMbin = QMbin.decode('utf-8').strip()
+    except:
+      QMbin = "N/A"
+    badQM = 0
+  if (badQM == 1):
+    line = '\n'
+    line += "Error: QM package name '"
+    line += QMPack
+    line += "' not recognized."
+    line += '\n'
+    print(line)
+    exit(0)
+  badMM = 1
+  if (MMPack == "tinker"):
+    MMPack = "TINKER"
+    cmd = "which analyze"
+    try:
+      MMbin = subprocess.check_output(cmd,shell=True)
+      MMbin = MMbin.decode('utf-8').strip()
+    except:
+      MMbin = "N/A"
+    badMM = 0
+  if (MMPack == "lammps"):
+    MMPack = "LAMMPS"
+    cmd = "which lammps"
+    try:
+      MMbin = subprocess.check_output(cmd,shell=True)
+      MMbin = MMbin.decode('utf-8').strip()
+    except:
+      MMbin = "N/A"
+    badMM = 0
+  if (badMM == 1):
+    line = '\n'
+    line += "Error: MM package name '"
+    line += MMPack
+    line += "' not recognized."
+    line += '\n'
+    print(line)
+    exit(0)
+line = "Settings:"
+line += '\n'
+line += " Threads: "
+line += str(Ncpus)
+line += '\n'
+if (allTests == 0):
+  line += " LICHEM binary: "
+  line += LICHEMbin
+  line += '\n'
+  line += " QM package: "
+  line += QMPack
+  line += '\n'
+  line += " Binary: "
+  line += QMbin
+  line += '\n'
+  line += " MM package: "
+  line += MMPack
+  line += '\n'
+  line += " Binary: "
+  line += MMbin
+  line += '\n'
+else:
+  if (forceAll == 1):
+    line += " Mode: Development"
+  else:
+    line += " Mode: All tests"
+  line += '\n'
+if (dryRun == 1):
+  line += " Mode: Dry run"
+  line += '\n'
+print(line)
+if (dryRun == 1):
+  line = "Dry run completed."
+  line += '\n'
+  print(line)
+  exit(0)
+if (((QMbin == "N/A") or (MMbin == "N/A")) and (allTests == 0)):
+  line = "Error: Missing binaries."
+  line += '\n'
+  print(line)
+  exit(0)
+line = "***************************************************"
+line += '\n'
+line += '\n'
+line += "Running LICHEM tests..."
+line += '\n'
+print(line)
+QMTests = []
+MMTests = []
+if (allTests == 1):
+  cmd = "which psi4"
+  try:
+    packBin = subprocess.check_output(cmd,shell=True)
+    QMTests.append("PSI4")
+  except:
+    if (forceAll == 1):
+      QMTests.append("PSI4")
+  cmd = "which g09"
+  try:
+    packBin = subprocess.check_output(cmd,shell=True)
+    QMTests.append("Gaussian")
+  except:
+    if (forceAll == 1):
+      QMTests.append("Gaussian")
+  cmd = "which nwchem"
+  try:
+    packBin = subprocess.check_output(cmd,shell=True)
+    QMTests.append("NWChem")
+  except:
+    if (forceAll == 1):
+      QMTests.append("NWChem")
+  cmd = "which analyze"
+  try:
+    packBin = subprocess.check_output(cmd,shell=True)
+    MMTests.append("TINKER")
+  except:
+    if (forceAll == 1):
+      MMTests.append("TINKER")
+  cmd = "which lammps"
+  try:
+    packBin = subprocess.check_output(cmd,shell=True)
+    MMTests.append("LAMMPS")
+  except:
+    if (forceAll == 1):
+      MMTests.append("LAMMPS")
+else:
+  QMTests.append(QMPack)
+  MMTests.append(MMPack)
+for qmTest in QMTests:
+  for mmTest in MMTests:
+    QMPack = qmTest
+    MMPack = mmTest
+    dirPath = ""
+    if (QMPack == "PSI4"):
+      dirPath += "PSI4_"
+    if (QMPack == "Gaussian"):
+      dirPath += "Gau_"
+    if (QMPack == "NWChem"):
+      dirPath += "NWChem_"
+    dirPath += MMPack
+    dirPath += "/"
+    os.chdir(dirPath)
+    line = QMPack+"/"+MMPack
+    line += " results:"
+    print(line)
+    if ((QMPack == "PSI4") or (QMPack == "Gaussian")):
+      line = ""
+      passEnergy = 0
+      RunLICHEM("waterdimer.xyz","hfreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("QM energy:",2)
+      if (QMPack == "PSI4"):
+        if (QMMMEnergy == round(-4136.93039814,3)):
+          passEnergy = 1
+      if (QMPack == "Gaussian"):
+        if (QMMMEnergy == round(-4136.9317704519,3)):
+          passEnergy = 1
+      line = AddPass("HF energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+    line = ""
+    passEnergy = 0
+    RunLICHEM("waterdimer.xyz","pbereg.inp","watercon.inp")
+    QMMMEnergy,savedEnergy = RecoverEnergy("QM energy:",2)
+    if (QMPack == "PSI4"):
+      if (QMMMEnergy == round(-4154.16836599,3)):
+        passEnergy = 1
+    if (QMPack == "Gaussian"):
+      if (QMMMEnergy == round(-4154.1676114324,3)):
+        passEnergy = 1
+    if (QMPack == "NWChem"):
+      if (QMMMEnergy == round(-4154.1683939169,3)):
+        passEnergy = 1
+    line = AddPass("PBE0 energy:",passEnergy,line)
+    line = AddRunTime(line)
+    line = AddEnergy(updateResults,line,savedEnergy)
+    print(line)
+    CleanFiles()
+    if (QMPack == "PSI4"):
+      line = ""
+      passEnergy = 0
+      RunLICHEM("waterdimer.xyz","ccsdreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("QM energy:",2)
+      if (QMPack == "PSI4"):
+        if (QMMMEnergy == round(-4147.7304837,3)):
+          passEnergy = 1
+      line = AddPass("CCSD energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+    if (QMPack == "Gaussian"):
+      line = ""
+      passEnergy = 0
+      RunLICHEM("waterdimer.xyz","pm6reg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("QM energy:",2)
+      if (QMPack == "Gaussian"):
+        if (QMMMEnergy == round(-4.8623027634995,3)):
+          passEnergy = 1
+      line = AddPass("PM6 energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+    line = ""
+    passEnergy = 0
+    RunLICHEM("methfluor.xyz","freqreg.inp","methflcon.inp")
+    QMMMFreqs = RecoverFreqs()
+    QMMMEnergy = 5e100
+    for freqVal in QMMMFreqs:
+      if (freqVal < QMMMEnergy):
+        QMMMEnergy = freqVal
+        savedEnergy = "Freq:   "+str(freqVal)
+    if (QMMMEnergy > 1e100):
+      savedEnergy = "Crashed..."
+    if (QMPack == "PSI4"):
+      if (round(QMMMEnergy,0) == round(-40.507339,0)):
+        passEnergy = 1
+    if (QMPack == "Gaussian"):
+      if (round(QMMMEnergy,0) == round(-31.769945,0)):
+        passEnergy = 1
+    if (QMPack == "NWChem"):
+      if (round(QMMMEnergy,0) == round(-31.769945,0)):
+        passEnergy = 1
+    line = AddPass("Frequencies:",passEnergy,line)
+    line = AddRunTime(line)
+    line = AddEnergy(updateResults,line,savedEnergy)
+    print(line)
+    CleanFiles()
+    line = ""
+    PassEnergy = 0
+    cmd = "cp methflbeads.xyz BeadStartStruct.xyz"
+    subprocess.call(cmd,shell=True)
+    RunLICHEM("methfluor.xyz","nebreg.inp","methflcon.inp")
+    QMMMEnergy,savedEnergy = RecoverEnergy("Forward barrier",3)
+    if (QMPack == "PSI4"):
+      if (QMMMEnergy == round(0.39581219003957,3)):
+        passEnergy = 1
+    if (QMPack == "Gaussian"):
+      if (QMMMEnergy == round(-0.39582668467028,3)):
+        passEnergy = 1
+    if (QMPack == "NWChem"):
+      if (QMMMEnergy == round(-0.39582668467028,3)):
+        passEnergy = 1
+    line = AddPass("NEB Forward barrier:",passEnergy,line)
+    line = AddRunTime(line)
+    line = AddEnergy(updateResults,line,savedEnergy)
+    print(line)
+    CleanFiles()
+    line = ""
+    PassEnergy = 0
+    cmd = "cp methflbeads.xyz BeadStartStruct.xyz"
+    subprocess.call(cmd,shell=True)
+    RunLICHEM("methfluor.xyz","qsmreg.inp","methflcon.inp")
+    QMMMEnergy,savedEnergy = RecoverEnergy("TS Energy",4)
+    if (QMPack == "PSI4"):
+      if (QMMMEnergy == round(-239.27686429,3)):
+        passEnergy = 1
+    if (QMPack == "Gaussian"):
+      if (QMMMEnergy == round(-239.27681732,3)):
+        passEnergy = 1
+    if (QMPack == "NWChem"):
+      if (QMMMEnergy == round(-239.27681732,3)):
+        passEnergy = 1
+    line = AddPass("QSM TS energy:",passEnergy,line)
+    line = AddRunTime(line)
+    line = AddEnergy(updateResults,line,savedEnergy)
+    print(line)
+    CleanFiles()
+    if (MMPack == "TINKER"):
+      line = ""
+      passEnergy = 0
+      cmd = "cp pchrg.key tinker.key"
+      subprocess.call(cmd,shell=True)
+      RunLICHEM("waterdimer.xyz","mmreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("MM energy:",2)
+      if (QMMMEnergy == round(-0.2596903536223,3)):
+        passEnergy = 1
+      line = AddPass("TIP3P energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+      line = ""
+      passEnergy = 0
+      cmd = "cp pol.key tinker.key"
+      subprocess.call(cmd,shell=True)
+      RunLICHEM("waterdimer.xyz","solvreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("MM energy:",2)
+      if (QMMMEnergy == round(-1.2549403662026,3)):
+        passEnergy = 1
+      line = AddPass("AMOEBA/GK energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+      line = ""
+      passEnergy = 0
+      cmd = "cp pchrg.key tinker.key"
+      subprocess.call(cmd,shell=True)
+      RunLICHEM("waterdimer.xyz","pchrgreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("QMMM energy:",2)
+      if (QMPack == "PSI4"):
+        if (QMMMEnergy == round(-2077.2021947277,3)):
+          passEnergy = 1
+      if (QMPack == "Gaussian"):
+        if (QMMMEnergy == round(-2077.2018207808,3)):
+          passEnergy = 1
+      if (QMPack == "NWChem"):
+        if (QMMMEnergy == round(-2077.2022117306,3)):
+          passEnergy = 1
+      line = AddPass("PBE0/TIP3P energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+      line = ""
+      passEnergy = 0
+      cmd = "cp pol.key tinker.key"
+      subprocess.call(cmd,shell=True)
+      RunLICHEM("waterdimer.xyz","polreg.inp","watercon.inp")
+      QMMMEnergy,savedEnergy = RecoverEnergy("QMMM energy:",2)
+      if (QMPack == "PSI4"):
+        if (QMMMEnergy == round(-2077.1114201829,3)):
+          passEnergy = 1
+      if (QMPack == "Gaussian"):
+        if (QMMMEnergy == round(-2077.1090319595,3)):
+          passEnergy = 1
+      if (QMPack == "NWChem"):
+        if (QMMMEnergy == round(-2077.1094168459,3)):
+          passEnergy = 1
+      line = AddPass("PBE0/AMOEBA energy:",passEnergy,line)
+      line = AddRunTime(line)
+      line = AddEnergy(updateResults,line,savedEnergy)
+      print(line)
+      CleanFiles()
+      if ((QMPack == "Gaussian") or (QMPack == "NWChem")):
+        line = ""
+        passEnergy = 0
+        cmd = "cp pbopt.key tinker.key"
+        subprocess.call(cmd,shell=True)
+        cmd = "cp pbbasis.txt BASIS"
+        subprocess.call(cmd,shell=True)
+        RunLICHEM("alkyl.xyz","pboptreg.inp","alkcon.inp")
+        QMMMEnergy,savedEnergy = RecoverEnergy("Opt. step: 2",6)
+        if (QMPack == "Gaussian"):
+          if (QMMMEnergy == round(-3015.0548490566,3)):
+            passEnergy = 1
+        if (QMPack == "NWChem"):
+          if (QMMMEnergy == round(-3015.2278310975,3)):
+            passEnergy = 1
+        line = AddPass("DFP/Pseudobonds:",passEnergy,line)
+        line = AddRunTime(line)
+        line = AddEnergy(updateResults,line,savedEnergy)
+        print(line)
+        CleanFiles()
+    line = ""
+    print(line)
+    os.chdir("../")
+line = ""
+line += "***************************************************"
+line += '\n'
+line += '\n'
+line += "Statistics:"
+line += '\n'
+line += " Tests passed: "+str(passCt)+'\n'
+line += " Tests failed: "+str(failCt)+'\n'
+endTime = time.time()
+totalTime = (endTime-startTime)
+timeUnits = " seconds"
+if (totalTime > 60):
+  totalTime /= 60.0
+  timeUnits = " minutes"
+  if (totalTime > 60):
+    totalTime /= 60.0
+    timeUnits = " hours"
+    if (totalTime > 24):
+      totalTime /= 24.0
+      timeUnits = " days"
+line += " Total run time: "+('%.2f'%round(totalTime,2))+timeUnits+'\n'
+line += '\n'
+line += "***************************************************"
+line += '\n'
+line += '\n'
+line += "Done."
+line += '\n'
+print(line)
+exit(0)

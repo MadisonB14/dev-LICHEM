@@ -151,7 +151,9 @@ class QMMMSettings
     int perOpt; /*keep files per Opt (macroiter) step*/
     int perQM; /*keep files per QM (microiter) step*/
     //END: Hatice GOKCAN
-
+    //Start: Madison
+    //bool useSCFPol;
+    //End: Madison
 };
 
 #endif

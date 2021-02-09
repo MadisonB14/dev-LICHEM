@@ -70,7 +70,8 @@ void ExternalGaussian(int&,char**&);
 
 void ExtractGlobalPoles(int& argc, char**& argv);
 
-void ExtractTINKpoles(vector<QMMMAtom>&,int);
+//void ExtractTINKpoles(vector<QMMMAtom>&,vector<QMMMSettings>&,int);
+void ExtractTINKpoles(vector<QMMMAtom>&,int,fstream&);
 
 int FBNEBMCMove(vector<QMMMAtom>&,vector<VectorXd>&,QMMMSettings&,
                 VectorXd&,fstream&);
@@ -83,7 +84,7 @@ Coord FindQMCOM(vector<QMMMAtom>&,QMMMSettings&,int);
 
 void FindTINKERClasses(vector<QMMMAtom>&,fstream&);
 
-void GaussianCharges(vector<QMMMAtom>&,QMMMSettings&,int);
+void GaussianCharges(vector<QMMMAtom>&,QMMMSettings&,int,fstream&);
 
 double GaussianEnergy(vector<QMMMAtom>&,QMMMSettings&,int);
 
@@ -202,7 +203,7 @@ void ReadArgs(int&,char**&,fstream&,fstream&,fstream&,fstream&,fstream&,fstream&
 void ReadLICHEMInput(fstream&,fstream&,fstream&,
                      vector<QMMMAtom>&,QMMMSettings&,fstream&,int&);
 
-void RotateTINKCharges(vector<QMMMAtom>&,int);
+void RotateTINKCharges(vector<QMMMAtom>&,QMMMSettings&,int);
 
 OctCharges SphHarm2Charges(RedMPole);
 

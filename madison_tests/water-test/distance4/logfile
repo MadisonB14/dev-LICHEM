@@ -1,0 +1,60 @@
+
+###############################################################################
+#                                                                             #
+#                 LICHEM: Layered Interacting CHEmical Models                 #
+#                                                                             #
+#                      Symbiotic Computational Chemistry                      #
+#                                                                             #
+###############################################################################
+
+
+Last modification: 10:34:51 on Jan 20 2021
+
+Reading input...
+
+No fatal errors detected.
+ And there was much rejoicing. Yay...
+
+Setting up simulation...
+
+Input files:
+ Coordinate file: xyzfile.xyz
+ Connectivity file: connect.inp
+ Region file: regions.inp
+
+Atoms: 6
+ QM atoms: 3
+  Charge: 0
+  Spin: 1
+ MM atoms: 3
+ Pseudo-atoms: 0
+ Boundary-atoms: 0
+
+Simulation mode: QMMM single-point energy
+ QM wrapper: Gaussian
+ QM method: b3lyp/6-31G*
+ MM wrapper: TINKER
+ MM potential: Polarizable force field
+
+Parallelization and memory settings:
+ OpenMP threads: 8
+ QM threads: 4
+ QM memory: 256 MB
+ MM threads: 4
+
+Single-point energy:
+
+  QM energy: -2079.1877342766 eV
+  MM energy: 0.00953427263453 eV
+  QMMM energy: -2079.1782000039 eV -76.408392890827 a.u.
+
+################# Usage Statistics #################
+  Total wall time:                     0.0005 hours
+  Wall time for QM Wrappers:           0.0002 hours
+  Wall time for MM Wrappers:           0.0002 hours
+  Wall time for LICHEM:                0.0000 hours
+####################################################
+
+
+Done.
+

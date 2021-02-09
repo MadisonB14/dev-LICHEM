@@ -71,6 +71,12 @@ int main(int argc, char* argv[])
   logFile.flush();
   //End of section
 
+  //Madison: Start
+  cout << "I'm in LICHEM.cpp right now!" << '\n';
+  cout << '\n';
+  cout.flush();
+  //Madison: End
+
   //Read input and check for errors
   ReadLICHEMInput(xyzFile,connectFile,regionFile,QMMMData,QMMMOpts,logFile,stat);
   if(stat!=0){
@@ -105,7 +111,8 @@ int main(int argc, char* argv[])
     stringstream call;
     call.str("");
     //Delete old files
-    call << "rm -rf " << QMMMOpts.backDir << "; ";
+    //Madison: commenting out the deleting of files
+    //call << "rm -rf " << QMMMOpts.backDir << "; ";
     //Create new directory
     call << "mkdir " << QMMMOpts.backDir;
     globalSys = system(call.str().c_str());
@@ -127,6 +134,11 @@ int main(int argc, char* argv[])
   //Calculate single-point energy
   if (SinglePoint)
   {
+    //Madison: comment
+    cout << "LICHEM.cpp recognizes I'm running a SP energy calculation." << '\n';
+    cout << '\n';
+    cout.flush();
+    //Madison: done
     double Eqm; //QM energy
     double Emm; //MM energy
     if (QMMMOpts.NBeads == 1)
@@ -153,6 +165,11 @@ int main(int argc, char* argv[])
       }
       if (Gaussian)
       {
+        //Madison: comment
+        cout << "LICHEM.cpp recognizes I want to use Gaussian." << '\n';
+        cout << '\n';
+        cout.flush();
+        //Madison: done
         int tStart = (unsigned)time(0);
         Eqm += GaussianEnergy(QMMMData,QMMMOpts,p);
         QMTime += (unsigned)time(0)-tStart;
@@ -1851,7 +1868,8 @@ int main(int argc, char* argv[])
       //Clear any remaining Gaussian files
       stringstream call; //Stream for system calls and reading/writing files
       call.str("");
-      call << "rm -f Gau-*"; //Produced if there is a crash
+      //Madison: commenting out the rm -f Gau line
+      //call << "rm -f Gau-*"; //Produced if there is a crash
       globalSys = system(call.str().c_str());
     }
     if (PSI4)
@@ -1867,7 +1885,8 @@ int main(int argc, char* argv[])
       //Clear worthless output xyz file
       stringstream call; //Stream for system calls and reading/writing files
       call.str("");
-      call << "rm -f ";
+      //Madison: commenting out the rm -f line
+      //call << "rm -f ";
       for (int i=0;i<argc;i++)
       {
         //Find filename

@@ -40,6 +40,9 @@ void ExternalGaussian(int& argc, char**& argv)
   /*Start: Hatice GOKCAN */
   fstream logFile,errFile;
   /*End: Hatice GOKCAN*/
+  cout << "Madison- I'm in the GauExternal.cpp file.";
+  cout << '\n' << '\n';
+  cout.flush();
   //Read arguments
   for (int i=0;i<argc;i++)
   {
@@ -135,6 +138,10 @@ void ExternalGaussian(int& argc, char**& argv)
       QMMMData[i].P[bead].z *= bohrRad;
     }
   }
+  //Madison: Start
+  //Don't want to lose contents of the Gausian input so saving it with flush()
+  gauInput.flush();
+  //Madison: End
   gauInput.close();
   //Calculate the QMMM forces
   VectorXd forces(Ndof); //Forces for QM and PB
@@ -217,7 +224,8 @@ double GaussianExternOpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                          int bead)
 {
   //Runs Gaussian optimizations with GauExternal
-  fstream inFile,QMLog; //Generic file streams
+  //Madison: added logFile to fstream below
+  fstream inFile,QMLog,logFile; //Generic file streams
   string dummy; //Generic string
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy print settings
@@ -388,7 +396,6 @@ double GaussianExternOpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
     globalSys = system(call.str().c_str());
   }
   //Calculate new point-charges and return
-  GaussianCharges(QMMMData,QMMMOpts,bead);
+  GaussianCharges(QMMMData,QMMMOpts,bead,logFile);
   return E;
 };
-

@@ -292,6 +292,10 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
                      fstream& regionFile, vector<QMMMAtom>& QMMMData,
                      QMMMSettings& QMMMOpts,fstream& logFile,int& stat)
 {
+  //Madison testing
+  logFile << "I am starting to read the LICHEM Input.";
+  logFile << '\n' << '\n';
+  //End Madison
   //Read input
   string dummy; //Generic string
   if (!GauExternal)
@@ -498,8 +502,14 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         //AMOEBA polarizable force field
         AMOEBA = 1;
         if (TINKER)
-        {
-          ExtractTINKpoles(QMMMData,0);
+        {//Start:Madison
+          logFile << "Madison- AMOEBA was selected to represent electrostatics in Input_reader.cpp.";
+          logFile << '\n' << '\n';
+          // cout << "Madison- AMOEBA was selected to represent electrostatics in Input_reader.cpp.";
+          // cout << '\n' << '\n';
+          // cout.flush();
+          //End:Madison
+          ExtractTINKpoles(QMMMData,0,logFile);
         }
       }
       if (dummy == "gem")
@@ -509,7 +519,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         if (TINKER)
         {
           //Collect TINKER multipoles or GEM-DM
-          ExtractTINKpoles(QMMMData,0);
+          ExtractTINKpoles(QMMMData,0,logFile);
         }
       }
     }
@@ -661,25 +671,32 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         PBCon = 1;
       }
     }
-    //START: Madison
-    else if (keyword == "SCF_polarization:")
+    else if (keyword == "scf_polarization:") //START: Madison
     {
-     //default is no
-     regionFile >> dummy;
-     LICHEMLowerText(dummy);
-     if ((dummy == "yes") or (dummy == "true"))
-     {
-       // forcefield for MM must be AMOEBA to do full polarization
-       if (AMOEBA = 1)
-       {
-         QMMMOpts.useSCFPol = true;
-       }
-       else
-       {
-         logile << "Warning: MM force field must be AMOEBA to use SCF polarization.";
-         logfile << '\n' << '\n';
-       }
-     }
+        logFile << "SCF polarization will be used.";
+        logFile << '\n' << '\n';
+        //default is no
+        regionFile >> dummy;
+        LICHEMLowerText(dummy);
+        if ((dummy == "yes") or (dummy == "true"))
+        {
+            // forcefield for MM must be AMOEBA to do full polarization
+            if (AMOEBA == 1)
+            {
+                //QMMMOpts.useSCFPol = true;
+                SCFPol = 1;
+            }
+            else
+            {
+                logFile << "Warning: MM force field must be AMOEBA to use SCF polarization.";
+                logFile << '\n';
+                logFile << "Terminating LICHEM calculation.";
+                logFile << '\n' << '\n';
+                logFile.flush();
+                stat=1; //Stops LICHEM
+                return;
+            }
+        }
     }
     //END: Madison
     //START: Hatice GOKCAN

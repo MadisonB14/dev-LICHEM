@@ -22,16 +22,29 @@
 */
 
 //TINKER routines
-void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
+void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
 {
-//Start: Madison
-  if(QMMMOpts.useSCFPol)
-  {
+ string dummy; //Generic string
+ fstream inFile,outFile; //Generic file streams
+ stringstream call; //Stream for system callas and reading/writing files
+ //Start: Madison
+ cout << "I am about to start messing with Madison's dipoles.";
+ cout << '\n' << '\n';
+ cout.flush();
+ int atomNum,IDipx,Idipy,IDipz;
+ string atomType;
+  //if(QMMMOpts.useSCFPol)
+ if(SCFPol=1)
+ {
+    //I should probably include the commands here to access TINKER and generate the initial induced dipoles
+    // so that user does not have to do this step
     call.str("");
     call << "xyzfile" << ".uind"; //tinker generates the .uind file based on the name of the xyzfile you give it
     inFile.open(call.str().c_str(),ios_base::in);
     while (!inFile.eof())
     {
+      cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
+      cout.flush();
       //Parse file line by line
       //Typical format of the induced dipole file is total number of atoms on first line
       //Next line begins with atom number, atom type and the dipoles for x, y and z
@@ -45,6 +58,10 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
         inFile >> QMMMData[i].MP[bead].IDipx;
         inFile >> QMMMData[i].MP[bead].IDipy;
         inFile >> QMMMData[i].MP[bead].IDipz;
+        // testing
+        cout << IDipx << '\n';
+        // cout << IDipy << '\n';
+        // cout << IDipz << '\n';
       }
     inFile.close();
     return;
@@ -52,12 +69,11 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
 //End: Madison
   }
   else
-  {
-    //Parses TINKER parameter files to find multipoles and local frames
-    string dummy; //Generic string
-    fstream inFile,outFile; //Generic file streams
-    stringstream call; //Stream for system calls and reading/writing files
+  { //Parses TINKER parameter files to find multipoles and local frames
     //Create TINKER xyz file from the structure
+    cout << "Madison- your code was just skipped inside Multipoles.cpp";
+    cout << '\n' << '\n';
+    cout.flush();
     call.str("");
     call << "LICHM_" << bead << ".xyz";
     outFile.open(call.str().c_str(),ios_base::out);
@@ -87,7 +103,7 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
     outFile.flush();
     outFile.close();
     //Write poledit input
-    //Poledit is part of Tinker and is used for manimpulating
+    //Poledit is part of Tinker and is used for manipulating
     //and processing polarizable atomic multipole models
     call.str("");
     call << "LICHM_" << bead << ".txt";
@@ -189,10 +205,10 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
     }
     inFile.close();
     //Clean up files
-    call.str("");
-    call << "rm -f LICHM_" << bead << ".txt LICHM_";
-    call << bead << ".key LICHM_" << bead << ".xyz LICHM_";
-    call << bead << ".out";
+    // call.str("");
+    // call << "rm -f LICHM_" << bead << ".txt LICHM_";
+    // call << bead << ".key LICHM_" << bead << ".xyz LICHM_";
+    // call << bead << ".out";
     globalSys = system(call.str().c_str());
     return;
   }
@@ -202,6 +218,9 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead)
 
 void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
 {
+  cout << "Madison- I'm in the RotateTINKCharges function in Multipoles.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Switches from the local frame of reference to the global frame
   //of reference
   #pragma omp parallel for schedule(dynamic) num_threads(Ncpus)
@@ -422,14 +441,18 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
       newPoles.Dz += QMMMData[i].MP[bead].Dy*vecY(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dz*vecZ(2);
 //Start: Madison
-      if(QMMMOpts.useSCFPol)
+      //if(QMMMOpts.useSCFPol)
+      if(SCFPol)
       {
+        cout << "Hey Madison- I'm actually doing what I'm supposed to in Multipoles.cpp";
+        cout << '\n' << '\n';
+        cout.flush();
         //Here, I am adding the induced dipoles that were gathered from
         //the tinker input file, to the 3 dipole terms.
         //I think I have to re-initiate the value to 0.
-        newPoles.Dx += QMMMData[i].MP[bead].IDipx
-        newPoles.Dy += QMMMData[i].MP[bead].IDipy
-        newPoles.Dz += QMMMData[i].MP[bead].IDipz
+        newPoles.Dx += QMMMData[i].MP[bead].IDipx;
+        newPoles.Dy += QMMMData[i].MP[bead].IDipy;
+        newPoles.Dz += QMMMData[i].MP[bead].IDipz;
         newPoles.IDx = 0;
         newPoles.IDy = 0;
         newPoles.IDz = 0;
@@ -565,6 +588,9 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
 void WriteTINKMPole(vector<QMMMAtom>& QMMMData, fstream& outFile, int i,
                     int bead)
 {
+  cout << "Madison- I'm in the WriteTINKMPole function in Multipoles.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Write a new multipole definition for pseudo-bonds and QM atoms
   outFile << "multipole -"; //Negative sign defines the frame with atom IDs
   outFile << (QMMMData[i].id+1) << " ";
@@ -617,6 +643,9 @@ void WriteTINKMPole(vector<QMMMAtom>& QMMMData, fstream& outFile, int i,
 void WriteChargeFile(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                      int bead)
 {
+  cout << "Madison- I'm in the WriteChargeFile function in Multipoles.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function to write a file for the MM charges
   stringstream call; //Generic stream
   fstream outFile; //Stream for the charge file
@@ -937,6 +966,9 @@ void WriteChargeFile(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 
 void ExtractGlobalPoles(int& argc, char**& argv)
 {
+  cout << "Madison- I'm in the ExtractGlobalPoles function in Multipoles.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function to print the multipoles in the global frame
   fstream xyzFile,connectFile,regionFile;
   /*Start: Hatice GOKCAN */

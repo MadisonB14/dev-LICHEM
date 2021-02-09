@@ -1,0 +1,18 @@
+Calculation_type: SP
+Electrostatics: AMOEBA
+Potential_Type: QMMM
+QM_type: g16
+QM_method: B3LYP
+QM_basis: GEN
+QM_memory: 80 GB
+QM_charge: 0
+QM_spin: 1
+MM_type: TINKER
+keep_files: yes
+SCF_polarization: True
+QM_atoms: 3
+1 2 3
+Pseudobond_atoms: 0
+Boundary_atoms: 0
+Frozen_atoms: 3
+4 5 6

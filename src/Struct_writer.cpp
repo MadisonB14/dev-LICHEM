@@ -189,6 +189,9 @@ void WriteGauInput(vector<QMMMAtom>& QMMMData, string calcTyp,
     }
     if (AMOEBA)
     {
+      cout << "Madison- I'm in the WriteGauInput function in Struct_writer.cpp";
+      cout << '\n' << '\n';
+      cout.flush();
       for (int i=0;i<Natoms;i++)
       {
         if (QMMMData[i].MMRegion)
@@ -298,6 +301,13 @@ void WriteGauInput(vector<QMMMAtom>& QMMMData, string calcTyp,
       getline(inFile,dummy);
       call << dummy << '\n';
     }
+    // // Madison: attempt at saving gaussian input
+    // while (getline(inFile,dummy))
+    // {
+    //   cout << dummy << '\n';
+    //   cout << '\n' << '\n';
+    // }
+    // //Madison: end
     inFile.close();
   }
   outFile << call.str();
@@ -1073,4 +1083,3 @@ void WriteQMConnect(int& argc,char**& argv)
   exit(0);
   return;
 };
-

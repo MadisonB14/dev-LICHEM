@@ -20,6 +20,9 @@
 //MM utility functions
 void FindTINKERClasses(vector<QMMMAtom>& QMMMData,fstream& logFile)
 {
+  cout << "Madison- I'm in the FindTINKERClasses function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Parses TINKER parameter files to find atom classes
   fstream inFile; //Generic file stream
   string dummy; //Generic string
@@ -108,6 +111,9 @@ void FindTINKERClasses(vector<QMMMAtom>& QMMMData,fstream& logFile)
 void TINKERInduced(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                    int bead,fstream& logFile)
 {
+  cout << "Madison- I'm in the TINKERInduced function in TINKER.cpp.";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function to extract induced dipoles
   fstream outFile,inFile; //Generic file streams
   stringstream call; //Stream for system calls and reading/writing files
@@ -255,7 +261,7 @@ void TINKERInduced(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
       int mystat=0;
       boundaries = TraceBoundary(QMMMData,i,mystat,logFile);
       if(mystat!=0){
-        exit(0); 
+        exit(0);
       }
       double qNew = qi;
       for (unsigned int j=0;j<boundaries.size();j++)
@@ -309,7 +315,7 @@ void TINKERInduced(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   }
   inFile.close();
   //Delete junk files
-  if(!QMMMOpts.KeepFiles){ 
+  if(!QMMMOpts.KeepFiles){
     call.str("");
     call << "rm -f";
     call << " LICHM_" << bead << ".xyz";
@@ -326,6 +332,9 @@ void TINKERInduced(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double TINKERPolEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                        int bead,fstream& logFile)
 {
+  cout << "Madison- I'm in the TINKERPolEnergy function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function to extract the polarization energy
   fstream outFile,inFile; //Generic file streams
   stringstream call; //Stream for system calls and reading/writing files
@@ -558,7 +567,7 @@ double TINKERPolEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   }
   inFile.close();
   //Clean up files
-  
+
 
   if(!QMMMOpts.KeepFiles){
     call.str("");
@@ -586,6 +595,9 @@ double TINKERPolEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double TINKERForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                     QMMMSettings& QMMMOpts, int bead)
 {
+  cout << "Madison- I'm in the TINKERForces function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function for calculating the MM forces on a set of QM atoms
   fstream outFile,inFile; //Generic file streams
   string dummy; //Generic string
@@ -861,13 +873,16 @@ double TINKERForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
   }
   //Return
   Emm *= kcal2eV;
- 
+
   return Emm;
 };
 
 double TINKERMMForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                       QMMMSettings& QMMMOpts, int bead,fstream& logFile)
 {
+  cout << "Madison- I'm in the TINKERMMForces function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function to calculate the forces on MM atoms
   //NB: QM atoms are included in the array, but their forces are not updated
   fstream outFile,inFile; //Generic file streams
@@ -1142,6 +1157,9 @@ double TINKERMMForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
 double TINKERPolForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                        QMMMSettings& QMMMOpts, int bead,fstream& logFile)
 {
+  cout << "Madison- I'm in the TINKERPolForces function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function for calculating the MM forces on a set of QM atoms
   fstream outFile,inFile; //Generic file streams
   string dummy; //Generic string
@@ -1413,6 +1431,9 @@ double TINKERPolForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
 double TINKEREnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                     int bead,fstream& logFile)
 {
+  cout << "Madison- I'm in the TINKEREnergy function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Runs TINKER MM energy calculations
   fstream outFile,inFile; //Generic file streams
   stringstream call; //Stream for system calls and reading/writing files
@@ -1661,6 +1682,9 @@ double TINKEREnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 MatrixXd TINKERHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                        int bead)
 {
+  cout << "Madison- I'm in the TINKERHessian function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function for calculating the MM forces on a set of QM atoms
   fstream outFile,inFile,MMLog; //Generic file streams
   string dummy; //Generic string
@@ -1957,6 +1981,9 @@ MatrixXd TINKERHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double TINKEROpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int bead,
                  fstream& logFile,int& mystat)
 {
+  cout << "Madison- I'm in the TINKEROpt function in TINKER.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Runs TINKER MM optimization
   fstream outFile,inFile; //Generic file streams
   stringstream call; //Stream for system calls and reading/writing files
@@ -2050,12 +2077,12 @@ double TINKEROpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int bead,
 
        /*Start:Hatice GOKCAN*/
        /*if( (Nmm + Nbound) != Nfreeze ){
-           logFile << "             "; 
+           logFile << "             ";
            logFile << "Error:\n";
            logFile << "             ";
            logFile << "Total number of MM atoms and boundary atoms\n";
            logFile << "             ";
-           logFile << "are not equal to the number of frozen atoms.\n"; 
+           logFile << "are not equal to the number of frozen atoms.\n";
            mystat=1;
            return 0;
        }*/
@@ -2263,4 +2290,3 @@ double TINKEROpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int bead,
   E *= kcal2eV;
   return E;
 };
-

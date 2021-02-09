@@ -1,0 +1,52 @@
+
+     ######################################################################
+   ##########################################################################
+  ###                                                                      ###
+ ###            Tinker  ---  Software Tools for Molecular Design            ###
+ ##                                                                          ##
+ ##                        Version 8.6  February 2019                        ##
+ ##                                                                          ##
+ ##               Copyright (c)  Jay William Ponder  1990-2019               ##
+ ###                           All Rights Reserved                          ###
+  ###                                                                      ###
+   ##########################################################################
+     ######################################################################
+
+
+ Additional Atomic Multipoles for Specific Atoms :
+
+      Atom         Coordinate Frame Definition         Multipole Moments
+
+           1        0      0      0   None        -0.75710
+                                                   0.00000  0.00000  0.00000
+                                                   0.00000
+                                                   0.00000  0.00000
+                                                   0.00000  0.00000  0.00000
+
+           2        0      0      0   None         0.37855
+                                                   0.00000  0.00000  0.00000
+                                                   0.00000
+                                                   0.00000  0.00000
+                                                   0.00000  0.00000  0.00000
+
+           3        0      0      0   None         0.37855
+                                                   0.00000  0.00000  0.00000
+                                                   0.00000
+                                                   0.00000  0.00000
+                                                   0.00000  0.00000  0.00000
+
+ Additional Dipole Polarizabilities for Specific Atoms :
+
+      Atom               Alpha       Thole
+
+           1             0.000       0.000
+           2             0.000       0.000
+           3             0.000       0.000
+
+ Intermolecular Energy :              -0.32373842 Kcal/mole
+
+ Total Potential Energy :             -0.32373842 Kcal/mole
+
+ Energy Component Breakdown :           Kcal/mole        Interactions
+
+ Polarization                         -0.32373842                9

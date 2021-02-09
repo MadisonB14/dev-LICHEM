@@ -66,6 +66,10 @@ namespace LICHEMGlobal
   bool g09 = 0; //Wrapper flag
   //End: Hatice
 
+  //Start: Madison
+  bool SCFPol = 0;
+  //End: Madison
+
   //Timers
   int startTime = 0; //Time the calculation starts
   int endTime = 0; //Time the calculation ends

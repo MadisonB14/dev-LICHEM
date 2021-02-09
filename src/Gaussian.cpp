@@ -24,13 +24,18 @@
 
 //QM wrapper functions
 void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
-                     int bead)
+                     int bead,fstream& logFile)
 {
   //Function to update QM point-charges
   fstream QMLog; //Generic file streams
   string dummy; //Generic string
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy print settings
+  //Start: Madison
+  cout << "Madison-I'm in the GaussianCharges function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
+  //End: Madison
   //Check if there is a checkpoint file
   call.str("");
   call << "LICHM_" << bead << ".chk";
@@ -81,6 +86,9 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   WriteGauInput(QMMMData,call.str(),QMMMOpts,bead);
   //Run QM calculation
   call.str("");
+  cout << "Madison- I'm in the WriteGauInput function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   if(g09){
      call << "g09  LICHM_" << bead;
   }
@@ -139,6 +147,8 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
       }
     }
   }
+  //Madison: Start- flush out log file
+  QMLog.flush();
   QMLog.close();
   //Clean up files and save checkpoint file
   if(!QMMMOpts.KeepFiles){
@@ -179,6 +189,9 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                       int bead)
 {
+  cout << "Madison- I'm in the GaussianEnergy function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Calculates the QM energy with Gaussian
   fstream QMLog; //Generic file streams
   string dummy; //Generic string
@@ -341,37 +354,38 @@ double GaussianEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   }
   QMLog.close();
   //Clean up files and save checkpoint file
-  call.str("");
-  if (CheckFile("BACKUPQM"))
-  {
-    //Save old files
-    call << "cp LICHM_";
-    call << bead << ".* ";
-    call << QMMMOpts.backDir;
-    call << "/.";
-    call << " 2> LICHM_" << bead << ".trash; ";
-    call << "rm -f LICHM_" << bead << ".trash";
-    call << " "; //Extra blank space before the next command
-  }
-
-  if(!QMMMOpts.KeepFiles){
-    call.str("");
-    call << "rm -f ";
-    call << "LICHM_" << bead;
-    call << ".com ";
-    call << "LICHM_" << bead << ".log ";
-    globalSys = system(call.str().c_str());
-  }
-  else{
-    call.str("");
-    call << "rm -f ";
-    call << "LICHM_" << bead;
-    call << ".com ";
-    call << "; mv ";
-    call << "LICHM_" << bead << ".log ";
-    call << "LICHM_GaussEnergy_" << bead << ".log ";
-    globalSys = system(call.str().c_str());
-  }
+  // Commenting out line 358-388
+  // call.str("");
+  // if (CheckFile("BACKUPQM"))
+  // {
+  //   //Save old files
+  //   call << "cp LICHM_";
+  //   call << bead << ".* ";
+  //   call << QMMMOpts.backDir;
+  //   call << "/.";
+  //   call << " 2> LICHM_" << bead << ".trash; ";
+  //   call << "rm -f LICHM_" << bead << ".trash";
+  //   call << " "; //Extra blank space before the next command
+  // }
+  //
+  // if(!QMMMOpts.KeepFiles){
+  //   call.str("");
+  //   call << "rm -f ";
+  //   call << "LICHM_" << bead;
+  //   call << ".com ";
+  //   call << "LICHM_" << bead << ".log ";
+  //   globalSys = system(call.str().c_str());
+  // }
+  // else{
+  //   call.str("");
+  //   call << "rm -f ";
+  //   call << "LICHM_" << bead;
+  //   call << ".com ";
+  //   call << "; mv ";
+  //   call << "LICHM_" << bead << ".log ";
+  //   call << "LICHM_GaussEnergy_" << bead << ".log ";
+  //   globalSys = system(call.str().c_str());
+  // }
 
 
   //Change units and return
@@ -383,6 +397,9 @@ double GaussianEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                       QMMMSettings& QMMMOpts, int bead)
 {
+  cout << "Madison-I'm in the GaussianForces function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy print settings
@@ -601,6 +618,9 @@ double GaussianForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
 MatrixXd GaussianHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                          int bead)
 {
+  cout << "Madison-I'm in the GaussianHessian function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Function for calculating the Hessian for a set of QM atoms
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy print settings
@@ -779,6 +799,9 @@ MatrixXd GaussianHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianOpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                    int bead)
 {
+  cout << "Madison-I'm in the GaussianOpt function in Gaussian.cpp";
+  cout << '\n' << '\n';
+  cout.flush();
   //Runs Gaussian for pure QM optimizations
   fstream QMLog; //Generic file streams
   string dummy; //Generic string
@@ -919,4 +942,3 @@ double GaussianOpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   //Return
   return E;
 };
-

@@ -141,6 +141,11 @@ MPole GEMDen::GEMDM()
   dmpole.Qyy = 0;
   dmpole.Qxz = 0;
   dmpole.Qzz = 0;
+  //Start: Madison
+  dmpole.IDipx = 0;
+  dmpole.IDipy = 0;
+  dmpole.IDipz = 0;
+  //End:Madison
   //Add the nuclear charge from the periodic table
   dmpole.q += chemTable.revTyping(type_);
   //Convert Hermite Gaussians to multipoles
@@ -300,7 +305,7 @@ QMMMSettings::QMMMSettings()
   perQM=MaxQMSteps;
   //End: Hatice
   //Start: Madison
-  useSCFPol = false;
+  SCFPol = 0;
   //End: Madison
   return;
 };
@@ -885,7 +890,7 @@ PeriodicTable::PeriodicTable()
   covRadii_.push_back(1.0); //Default value
   vdWRadii_.push_back(1.0); //Default value
   atMasses_.push_back(1.0); //Default value
-  //Num. 115
+  //Moscovium, 115
   typs_.push_back("");
   covRadii_.push_back(1.0); //Default value
   vdWRadii_.push_back(1.0); //Default value
@@ -895,13 +900,13 @@ PeriodicTable::PeriodicTable()
   covRadii_.push_back(1.0); //Default value
   vdWRadii_.push_back(1.0); //Default value
   atMasses_.push_back(1.0); //Default value
-  //Num. 117
-  typs_.push_back(""); //Unnamed
+  //Tennessine, 117
+  typs_.push_back(""); 
   covRadii_.push_back(1.0); //Default value
   vdWRadii_.push_back(1.0); //Default value
   atMasses_.push_back(1.0); //Default value
-  //Num. 118
-  typs_.push_back(""); //Unnamed
+  //Oganesson, 118
+  typs_.push_back(""); 
   covRadii_.push_back(1.0); //Default value
   vdWRadii_.push_back(1.0); //Default value
   atMasses_.push_back(1.0); //Default value

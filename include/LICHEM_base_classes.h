@@ -90,6 +90,11 @@ class MPole
     double Qyy;
     double Qyz;
     double Qzz;
+    //Start: Madison
+    double IDipx;
+    double IDipy;
+    double IDipz;
+    //End: Madison
 };
 
 class RedMPole

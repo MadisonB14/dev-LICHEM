@@ -502,13 +502,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
         //AMOEBA polarizable force field
         AMOEBA = 1;
         if (TINKER)
-        {//Start:Madison
-          logFile << "Madison- AMOEBA was selected to represent electrostatics in Input_reader.cpp.";
-          logFile << '\n' << '\n';
-          // cout << "Madison- AMOEBA was selected to represent electrostatics in Input_reader.cpp.";
-          // cout << '\n' << '\n';
-          // cout.flush();
-          //End:Madison
+        {
           ExtractTINKpoles(QMMMData,0,logFile);
         }
       }
@@ -685,6 +679,7 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
             {
                 //QMMMOpts.useSCFPol = true;
                 SCFPol = 1;
+                ExtractTINKpoles(QMMMData,0,logFile);
             }
             else
             {

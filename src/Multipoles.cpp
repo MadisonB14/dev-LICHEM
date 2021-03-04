@@ -25,8 +25,8 @@
 void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
 {
  string dummy; //Generic string
- fstream inFile,outFile; //Generic file streams
- stringstream call; //Stream for system callas and reading/writing files
+ fstream inFile,outFile,dipoleKey; //Generic file streams
+ stringstream call; //Stream for system calls and reading/writing files
  //Start: Madison
  cout << "I am about to start messing with Madison's dipoles.";
  cout << '\n' << '\n';
@@ -34,13 +34,19 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
  int atomNum,IDipx,Idipy,IDipz;
  string atomType;
   //if(QMMMOpts.useSCFPol)
- if(SCFPol=1)
- {
-    //I should probably include the commands here to access TINKER and generate the initial induced dipoles
-    // so that user does not have to do this step
+ if(SCFPol == 1)
+ {//This will copy the tinker.key to a new file called dipole.key
+  //and add the keywords 'save-induce' in order to generate dipoles from tinker
     call.str("");
-    call << "xyzfile" << ".uind"; //tinker generates the .uind file based on the name of the xyzfile you give it
-    inFile.open(call.str().c_str(),ios_base::in);
+    call << "cp tinker.key dipole.key" << '\n';
+    globalSys = system(call.str().c_str());
+    dipoleKey.open("dipole.key", ios::app);
+    dipoleKey << "save-induce";
+    dipoleKey.close();
+    call.str("");
+    call << "analyze -k dipole.key tinker.xyz D > LICHEM.uind";
+    globalSys = system(call.str().c_str());
+    //inFile.open(call.str().c_str(),ios_base::in);
     while (!inFile.eof())
     {
       cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
@@ -59,7 +65,10 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
         inFile >> QMMMData[i].MP[bead].IDipy;
         inFile >> QMMMData[i].MP[bead].IDipz;
         // testing
-        cout << IDipx << '\n';
+        // cout << "Parsing xyzfile.uind for each line in it" << '\n';
+        // cout << atomNum << '\n';
+        // cout << atomType << '\n';
+        // cout << IDipx << '\n';
         // cout << IDipy << '\n';
         // cout << IDipz << '\n';
       }
@@ -81,6 +90,9 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
     outFile << Natoms << '\n';
     for (int i=0;i<Natoms;i++)
     {
+      cout << "Madison- skipped";
+      cout << '\n';
+      cout.flush();
       //Write XYZ data
       outFile << setw(6) << (QMMMData[i].id+1);
       outFile << " ";

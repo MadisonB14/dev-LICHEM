@@ -24,15 +24,15 @@
 //TINKER routines
 void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
 {
- string dummy; //Generic string
+ string dummy, words; //Generic string
  fstream inFile,outFile,dipoleKey; //Generic file streams
  stringstream call; //Stream for system calls and reading/writing files
+ int atomNum,IDipx,IDipy,IDipz;
  //Start: Madison
  cout << "I am about to start messing with Madison's dipoles.";
  cout << '\n' << '\n';
  cout.flush();
- int atomNum,IDipx,Idipy,IDipz;
- string atomType;
+ //string atomType;
   //if(QMMMOpts.useSCFPol)
  if(SCFPol == 1)
  {//This will copy the tinker.key to a new file called dipole.key
@@ -43,41 +43,69 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
     dipoleKey.open("dipole.key", ios::app);
     dipoleKey << "save-induce";
     dipoleKey.close();
+    //Run analyze to get dipoles
     call.str("");
     call << "analyze -k dipole.key tinker.xyz D > LICHEM.uind";
     globalSys = system(call.str().c_str());
-    //inFile.open(call.str().c_str(),ios_base::in);
-    while (!inFile.eof())
+    //Extract X, Y, Z Dipoles per atom
+    call.str("");
+    // inFile.open(call.str().c_str(),ios_base::in);
+    //while (!inFile.eof())
+    //stringstream line(dummy);
+    //while (getline(inFile, dummy))
+    cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
+    cout.flush();
+    // inFile.open("LICHEM.uind");
+    inFile.open("LICHEM.uind",ios_base::in);
+    //while(!inFile.eof())
+    if (inFile.is_open())
     {
-      cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
-      cout.flush();
-      //Parse file line by line
-      //Typical format of the induced dipole file is total number of atoms on first line
-      //Next line begins with atom number, atom type and the dipoles for x, y and z
-      getline(inFile,dummy);
-      stringstream line(dummy);
-      line >> dummy;
-      for (int i=0;i<Natoms;i++)
+      // cout << "Oh crap" << '\n';
+      // cout << "MADISON, Plz, STAHP" << '\n';
+      // cout.flush();
+      while(getline(inFile, words))
       {
-        inFile >> atomNum; //don't think I care about this
-        inFile >> atomType; //don't think I care about this
-        inFile >> QMMMData[i].MP[bead].IDipx;
-        inFile >> QMMMData[i].MP[bead].IDipy;
-        inFile >> QMMMData[i].MP[bead].IDipz;
-        // testing
-        // cout << "Parsing xyzfile.uind for each line in it" << '\n';
-        // cout << atomNum << '\n';
-        // cout << atomType << '\n';
-        // cout << IDipx << '\n';
-        // cout << IDipy << '\n';
-        // cout << IDipz << '\n';
+        // stringstream line(words);
+        // line >> words;
+        cout << words << '\n';
+        // cout << line << '\n';
+        cout.flush();
+        if(words == " Induced Dipole Moments (Debye) :")
+        {
+          cout << "Found the string, Woohoo!" << '\n';
+          cout.flush();
+          // line >> dummy;
+          getline(inFile,words); //blank line
+          cout << words << '\n';
+          cout.flush();
+          getline(inFile,words); // Atom X Y Z Total
+          cout << words << '\n';
+          cout.flush();
+          getline(inFile,words); //blank line
+          cout << words << '\n';
+          cout.flush();
+          for (int i=0;i<Natoms;i++)
+          {
+            inFile >> words >> atomNum; //don't think I care about this
+            inFile >> words >> QMMMData[i].MP[bead].IDipx;
+            inFile >> words >> QMMMData[i].MP[bead].IDipy;
+            inFile >> words >> QMMMData[i].MP[bead].IDipz;
+            // testing
+            cout << "Parsing LICHEM.uind for each line in it" << '\n';
+            cout << atomNum << '\n';
+            cout << IDipx << '\n';
+            cout << IDipy << '\n';
+            cout << IDipz << '\n';
+            cout.flush();
+          }
+        }
       }
-    inFile.close();
-    return;
-    };
+    }
+  inFile.close();
+  //return;
+}
 //End: Madison
-  }
-  else
+else
   { //Parses TINKER parameter files to find multipoles and local frames
     //Create TINKER xyz file from the structure
     cout << "Madison- your code was just skipped inside Multipoles.cpp";

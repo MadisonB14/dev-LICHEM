@@ -24,10 +24,11 @@
 //TINKER routines
 void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
 {
- string dummy, words; //Generic string
+ string dummy, test, words; //Generic string
  fstream inFile,outFile,dipoleKey; //Generic file streams
  stringstream call; //Stream for system calls and reading/writing files
- int atomNum,IDipx,IDipy,IDipz;
+ //int atomNum,IDipx,IDipy,IDipz,dog,cat,fish;
+ double fish, dog, cat, atomNum;
  //Start: Madison
  cout << "I am about to start messing with Madison's dipoles.";
  cout << '\n' << '\n';
@@ -84,19 +85,37 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
           getline(inFile,words); //blank line
           cout << words << '\n';
           cout.flush();
+          getline(inFile,words); //blank line
+          cout << words << '\n';
+          cout.flush();
           for (int i=0;i<Natoms;i++)
           {
-            inFile >> words >> atomNum; //don't think I care about this
-            inFile >> words >> QMMMData[i].MP[bead].IDipx;
-            inFile >> words >> QMMMData[i].MP[bead].IDipy;
-            inFile >> words >> QMMMData[i].MP[bead].IDipz;
-            // testing
-            cout << "Parsing LICHEM.uind for each line in it" << '\n';
-            cout << atomNum << '\n';
-            cout << IDipx << '\n';
-            cout << IDipy << '\n';
-            cout << IDipz << '\n';
+            stringstream line(words);
+            getline(inFile,words);
+            line >> QMMMData[i].MP[bead].atomNum;
+            cout << "Atom Number: " << QMMMData[i].MP[bead].atomNum << '\n';
+            line >> QMMMData[i].MP[bead].IDipx;
+            cout << "IDip x: " << QMMMData[i].MP[bead].IDipx << '\n';
+            line >> QMMMData[i].MP[bead].IDipy;
+            cout << "IDip y: " << QMMMData[i].MP[bead].IDipy << '\n';
+            line >> QMMMData[i].MP[bead].IDipz;
+            cout << "IDip z: " << QMMMData[i].MP[bead].IDipz << '\n';
             cout.flush();
+            // cout << "Generic 'words' keyword: " << words << '\n';
+            // cout.flush();
+            // line >> words;
+            // cout << "Generic 'words' keyword again: " << words << '\n';
+            // cout.flush();
+            // line >> words >> QMMMData[i].MP[bead].atomNum; //don't think I care about this
+            // line >> words >>QMMMData[i].MP[bead].IDipx;
+            // line >> words >>QMMMData[i].MP[bead].IDipy;
+            // line >> words >>QMMMData[i].MP[bead].IDipz;
+            // // testing
+            // cout << "What atom am I on: " << atomNum << '\n';
+            // cout << "IDip x: " << IDipx << '\n';
+            // cout << "IDip y: " << IDipy << '\n';
+            // cout << "IDip z: " << IDipz << '\n';
+            // cout.flush();
           }
         }
       }

@@ -73,6 +73,7 @@ class MPole
     int atom1; //Atom which defines the z axis
     int atom2; //Atom which defines the x axis
     int atom3; //Atom which defines the y axis (chiral only)
+    int atomNum; //Madison: atom number not saving it
     //Monopole moment
     double q;
     //Cartesian dipole moments

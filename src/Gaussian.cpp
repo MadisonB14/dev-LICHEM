@@ -31,11 +31,6 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   string dummy; //Generic string
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy print settings
-  //Start: Madison
-  cout << "Madison-I'm in the GaussianCharges function in Gaussian.cpp";
-  cout << '\n' << '\n';
-  cout.flush();
-  //End: Madison
   //Check if there is a checkpoint file
   call.str("");
   call << "LICHM_" << bead << ".chk";

@@ -54,40 +54,37 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
     //while (!inFile.eof())
     //stringstream line(dummy);
     //while (getline(inFile, dummy))
-    cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
-    cout.flush();
+    //cout << "Madison- I'm in the code you wrote in Multipoles.cpp" << '\n';
+    //cout.flush();
     // inFile.open("LICHEM.uind");
     inFile.open("LICHEM.uind",ios_base::in);
     //while(!inFile.eof())
     if (inFile.is_open())
     {
-      // cout << "Oh crap" << '\n';
-      // cout << "MADISON, Plz, STAHP" << '\n';
-      // cout.flush();
       while(getline(inFile, words))
       {
         // stringstream line(words);
         // line >> words;
-        cout << words << '\n';
+        // cout << words << '\n';
         // cout << line << '\n';
-        cout.flush();
+        // cout.flush();
         if(words == " Induced Dipole Moments (Debye) :")
         {
           cout << "Found the string, Woohoo!" << '\n';
           cout.flush();
           // line >> dummy;
           getline(inFile,words); //blank line
-          cout << words << '\n';
-          cout.flush();
+          // cout << words << '\n';
+          // cout.flush();
           getline(inFile,words); // Atom X Y Z Total
-          cout << words << '\n';
-          cout.flush();
+          // cout << words << '\n';
+          // cout.flush();
           getline(inFile,words); //blank line
-          cout << words << '\n';
-          cout.flush();
+          // cout << words << '\n';
+          // cout.flush();
           getline(inFile,words); //blank line
-          cout << words << '\n';
-          cout.flush();
+          // cout << words << '\n';
+          // cout.flush();
           for (int i=0;i<Natoms;i++)
           {
             stringstream line(words);
@@ -101,21 +98,6 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
             line >> QMMMData[i].MP[bead].IDipz;
             cout << "IDip z: " << QMMMData[i].MP[bead].IDipz << '\n';
             cout.flush();
-            // cout << "Generic 'words' keyword: " << words << '\n';
-            // cout.flush();
-            // line >> words;
-            // cout << "Generic 'words' keyword again: " << words << '\n';
-            // cout.flush();
-            // line >> words >> QMMMData[i].MP[bead].atomNum; //don't think I care about this
-            // line >> words >>QMMMData[i].MP[bead].IDipx;
-            // line >> words >>QMMMData[i].MP[bead].IDipy;
-            // line >> words >>QMMMData[i].MP[bead].IDipz;
-            // // testing
-            // cout << "What atom am I on: " << atomNum << '\n';
-            // cout << "IDip x: " << IDipx << '\n';
-            // cout << "IDip y: " << IDipy << '\n';
-            // cout << "IDip z: " << IDipz << '\n';
-            // cout.flush();
           }
         }
       }
@@ -127,9 +109,6 @@ void ExtractTINKpoles(vector<QMMMAtom>& QMMMData, int bead, fstream& logFile)
 else
   { //Parses TINKER parameter files to find multipoles and local frames
     //Create TINKER xyz file from the structure
-    cout << "Madison- your code was just skipped inside Multipoles.cpp";
-    cout << '\n' << '\n';
-    cout.flush();
     call.str("");
     call << "LICHM_" << bead << ".xyz";
     outFile.open(call.str().c_str(),ios_base::out);
@@ -137,9 +116,6 @@ else
     outFile << Natoms << '\n';
     for (int i=0;i<Natoms;i++)
     {
-      cout << "Madison- skipped";
-      cout << '\n';
-      cout.flush();
       //Write XYZ data
       outFile << setw(6) << (QMMMData[i].id+1);
       outFile << " ";
@@ -499,13 +475,14 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
       newPoles.Dz += QMMMData[i].MP[bead].Dx*vecX(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dy*vecY(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dz*vecZ(2);
-//Start: Madison
+      cout << "newPoles Dx, Dy, Dz: " << newPoles.Dx << ", " << newPoles.Dy << ", " << newPoles.Dz << '\n'; //Start on this line: Madison
+      cout.flush();
       //if(QMMMOpts.useSCFPol)
       if(SCFPol)
       {
-        cout << "Hey Madison- I'm actually doing what I'm supposed to in Multipoles.cpp";
-        cout << '\n' << '\n';
-        cout.flush();
+        //cout << "Hey Madison- I'm actually doing what I'm supposed to in Multipoles.cpp";
+        //cout << '\n' << '\n';
+        //cout.flush();
         //Here, I am adding the induced dipoles that were gathered from
         //the tinker input file, to the 3 dipole terms.
         //I think I have to re-initiate the value to 0.

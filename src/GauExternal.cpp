@@ -40,9 +40,6 @@ void ExternalGaussian(int& argc, char**& argv)
   /*Start: Hatice GOKCAN */
   fstream logFile,errFile;
   /*End: Hatice GOKCAN*/
-  cout << "Madison- I'm in the GauExternal.cpp file.";
-  cout << '\n' << '\n';
-  cout.flush();
   //Read arguments
   for (int i=0;i<argc;i++)
   {

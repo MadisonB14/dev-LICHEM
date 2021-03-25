@@ -135,9 +135,9 @@ int main(int argc, char* argv[])
   if (SinglePoint)
   {
     //Madison: comment
-    cout << "LICHEM.cpp recognizes I'm running a SP energy calculation." << '\n';
-    cout << '\n';
-    cout.flush();
+    // cout << "LICHEM.cpp recognizes I'm running a SP energy calculation." << '\n';
+    // cout << '\n';
+    // cout.flush();
     //Madison: done
     double Eqm; //QM energy
     double Emm; //MM energy

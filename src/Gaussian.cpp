@@ -81,9 +81,6 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   WriteGauInput(QMMMData,call.str(),QMMMOpts,bead);
   //Run QM calculation
   call.str("");
-  cout << "Madison- I'm in the WriteGauInput function in Gaussian.cpp";
-  cout << '\n' << '\n';
-  cout.flush();
   if(g09){
      call << "g09  LICHM_" << bead;
   }
@@ -184,8 +181,6 @@ void GaussianCharges(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                       int bead)
 {
-  cout << "Madison- I'm in the GaussianEnergy function in Gaussian.cpp";
-  cout << '\n' << '\n';
   cout.flush();
   //Calculates the QM energy with Gaussian
   fstream QMLog; //Generic file streams
@@ -392,8 +387,6 @@ double GaussianEnergy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                       QMMMSettings& QMMMOpts, int bead)
 {
-  cout << "Madison-I'm in the GaussianForces function in Gaussian.cpp";
-  cout << '\n' << '\n';
   cout.flush();
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -613,8 +606,6 @@ double GaussianForces(vector<QMMMAtom>& QMMMData, VectorXd& forces,
 MatrixXd GaussianHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                          int bead)
 {
-  cout << "Madison-I'm in the GaussianHessian function in Gaussian.cpp";
-  cout << '\n' << '\n';
   cout.flush();
   //Function for calculating the Hessian for a set of QM atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -794,8 +785,6 @@ MatrixXd GaussianHessian(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 double GaussianOpt(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                    int bead)
 {
-  cout << "Madison-I'm in the GaussianOpt function in Gaussian.cpp";
-  cout << '\n' << '\n';
   cout.flush();
   //Runs Gaussian for pure QM optimizations
   fstream QMLog; //Generic file streams

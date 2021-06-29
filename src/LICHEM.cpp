@@ -166,9 +166,9 @@ int main(int argc, char* argv[])
       if (Gaussian)
       {
         //Madison: comment
-        cout << "LICHEM.cpp recognizes I want to use Gaussian." << '\n';
-        cout << '\n';
-        cout.flush();
+        // cout << "LICHEM.cpp recognizes I want to use Gaussian." << '\n';
+        // cout << '\n';
+        // cout.flush();
         //Madison: done
         int tStart = (unsigned)time(0);
         Eqm += GaussianEnergy(QMMMData,QMMMOpts,p);

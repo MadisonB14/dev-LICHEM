@@ -189,9 +189,9 @@ void WriteGauInput(vector<QMMMAtom>& QMMMData, string calcTyp,
     }
     if (AMOEBA)
     {
-      cout << "Madison- I'm in the WriteGauInput function in Struct_writer.cpp";
-      cout << '\n' << '\n';
-      cout.flush();
+      // cout << "Madison- I'm in the WriteGauInput function in Struct_writer.cpp";
+      // cout << '\n' << '\n';
+      // cout.flush();
       for (int i=0;i<Natoms;i++)
       {
         if (QMMMData[i].MMRegion)

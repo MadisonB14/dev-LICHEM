@@ -516,9 +516,9 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
       newPoles.Dz += QMMMData[i].MP[bead].Dy*vecY(2);
       newPoles.Dz += QMMMData[i].MP[bead].Dz*vecZ(2);
 //Start: Madison
-      cout << "newPole.Dx before set to 0 " << newPoles.Dx << '\n';
-      cout << "newPole.Dy before set to 0 " << newPoles.Dy << '\n';
-      cout << "newPole.Dz before set to 0 " << newPoles.Dz << '\n';
+      //cout << "newPole.Dx before set to 0 " << newPoles.Dx << '\n';
+      //cout << "newPole.Dy before set to 0 " << newPoles.Dy << '\n';
+      //cout << "newPole.Dz before set to 0 " << newPoles.Dz << '\n';
       cout.flush();
       // Getting rid of ridiculously small decimals without meaning
       if (newPoles.Dx < 0.0000000000000001)
@@ -540,8 +540,8 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
         //the tinker input file, to the 3 dipole terms.
         //Setting the IDip terms to zero before adding for testing purposes
 	      //by uncommenting the following 3 lines.
-        cout << "Let's add induced dipoles to the others." << '\n';
-        cout.flush();
+        //cout << "Let's add induced dipoles to the others." << '\n';
+        //cout.flush();
         //QMMMData[i].MP[bead].IDipx = 0;
         //QMMMData[i].MP[bead].IDipy = 0;
         //QMMMData[i].MP[bead].IDipz = 0;
@@ -568,11 +568,11 @@ void RotateTINKCharges(vector<QMMMAtom>& QMMMData, int bead)
         newPoles.IDy = 0;
         newPoles.IDz = 0;
       }
-      cout << "Atom Number: " << i << '\n';
-      cout << "newPoles dx final check: " << newPoles.Dx << '\n';
-      cout << "newPole dy final check: " << newPoles.Dy << '\n';
-      cout << "newPole dz final check: " << newPoles.Dz << '\n';
-      cout.flush();
+      //cout << "Atom Number: " << i << '\n';
+      //cout << "newPoles dx final check: " << newPoles.Dx << '\n';
+      //cout << "newPole dy final check: " << newPoles.Dy << '\n';
+      //cout << "newPole dz final check: " << newPoles.Dz << '\n';
+      //cout.flush();
 //End: Madison
       //Rotate quadrupoles (This looks awful, but it works)
       //NB: This is a hard coded matrix rotation

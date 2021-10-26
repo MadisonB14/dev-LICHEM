@@ -667,8 +667,6 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
     }
     else if (keyword == "scf_polarization:") //START: Madison
     {
-        logFile << "SCF polarization will be used.";
-        logFile << '\n' << '\n';
         //default is no
         regionFile >> dummy;
         LICHEMLowerText(dummy);
@@ -678,6 +676,8 @@ void ReadLICHEMInput(fstream& xyzFile, fstream& connectFile,
             if (AMOEBA == 1)
             {
                 //QMMMOpts.useSCFPol = true;
+                logFile << "SCF polarization will be used.";
+                logFile << '\n' << '\n';
                 SCFPol = 1;
                 ExtractTINKpoles(QMMMData,0,logFile);
             }

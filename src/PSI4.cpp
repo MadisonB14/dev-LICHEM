@@ -126,7 +126,7 @@ double PSI4Energy(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int bead)
     call << "'./LICHM_" << bead << ".180']";
   }
   call << ",return_wfn=True)" << '\n';
-  call << "print('Energy: '+`Eqm`)" << '\n';
+  call << "print('Energy: ', Eqm)" << '\n';
   if (QMMM)
   {
     call << "oeprop(qmwfn,'MULLIKEN_CHARGES')" << '\n';

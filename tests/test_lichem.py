@@ -27,14 +27,9 @@ mm_programs = {"TINKER": "analyze", "LAMMPS": "lammps"}
 
 expected_results = {
     "Gaussian": {
-        "HF": 0,
         "PBE0": 0,
-        "CCSD": 0,
-        "Frequencies": 0,
-        "NEB": 0,
         "QSM TS": 0,
     },
-
 }
 
 # Make a list of programs to test. For each qm and mm
@@ -72,9 +67,14 @@ def test_run(qm, mm, calculation):
 
     folder = f"{qm}_{mm}"
 
+    # LICHEM command call using subprocess
+
+    # Process output 
+
+    # compare to expected
+
 
     # os.chdir(folder)
-
     # print(folder)
     # Run calculation script
     # Test output

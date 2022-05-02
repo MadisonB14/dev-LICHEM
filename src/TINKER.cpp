@@ -108,9 +108,6 @@ void FindTINKERClasses(vector<QMMMAtom>& QMMMData,fstream& logFile)
 void TINKERInduced(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                    int bead,fstream& logFile)
 {
-  cout << "Madison- I'm in the TINKERInduced function in TINKER.cpp.";
-  cout << '\n' << '\n';
-  cout.flush();
   //Function to extract induced dipoles
   fstream outFile,inFile; //Generic file streams
   stringstream call; //Stream for system calls and reading/writing files

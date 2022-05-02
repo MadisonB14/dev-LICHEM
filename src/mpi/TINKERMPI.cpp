@@ -242,7 +242,7 @@ void TINKERForcesMPIWrite(vector<QMMMAtom>& QMMMData,
   outFile.close();
 };
 
-void TINKERPolForcesMPIWrite(vector<QMMMAtom>& QMMMData, 
+void TINKERPolForcesMPIWrite(vector<QMMMAtom>& QMMMData,
                        QMMMSettings& QMMMOpts, int bead,int& mystat,fstream& logFile)
 {
   //Function for calculating the MM forces on a set of QM atoms
@@ -421,7 +421,7 @@ void TINKERPolForcesMPIWrite(vector<QMMMAtom>& QMMMData,
   outFile.flush();
   outFile.close();
 
-};/*finish write*/  
+};/*finish write*/
 
 void TINKEREnergyMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
                     int bead)
@@ -544,7 +544,7 @@ void TINKEREnergyMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   {
     for (int i=0;i<Natoms;i++)
     {
-      //Add multipoles
+      //Add poles
       if (QMMMData[i].QMRegion or QMMMData[i].PBRegion or QMMMData[i].BARegion)
       {
         double qi = 0;
@@ -784,7 +784,7 @@ void TINKERPolEnergyMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
   }
   outFile.flush();
   outFile.close();
-  
+
 };
 
 void TINKEROptMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int bead,
@@ -992,7 +992,7 @@ void TINKEROptMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int b
   }
   outFile.flush();
   outFile.close();
-  
+
   //Create TINKER xyz file from the structure
   call.str("");
   call << "LICHM_TINKEROpt_" << bead << ".xyz";
@@ -1033,15 +1033,15 @@ void TINKEROptMPIWrite(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int b
   outFile.close();
 
 }
-void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData, 
+void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
                                QMMMSettings& QMMMOpts, int bead,
                                double restr,int& mystat,fstream& logFile)
 {
 
-  fstream ofile,ifile; 
-  stringstream call; 
+  fstream ofile,ifile;
+  stringstream call;
   call.copyfmt(cout);
-  string dummy; 
+  string dummy;
   double E = 0;
   int ct;
   call.str("");
@@ -1057,7 +1057,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
   call << bead << ".key";
   ofile.open(call.str().c_str(),ios_base::app|ios_base::out);
   ofile << '\n';
-  ofile << "#QM force field parameters"; 
+  ofile << "#QM force field parameters";
   ofile << '\n';
 
   if (QMMMOpts.useMMCut)
@@ -1103,7 +1103,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
     ofile << '\n';
   }
   ofile << "openmp-threads " << Ncpus << '\n';
-  ofile << "digits 12" << '\n'; 
+  ofile << "digits 12" << '\n';
 
   if (PBCon)
   {
@@ -1115,7 +1115,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
     ofile << "beta 90.0" << '\n';
     ofile << "gamma 90.0" << '\n';
   }
-  ct = 0; 
+  ct = 0;
   if (QMMM or (Nfreeze > 0))
   {
     for (int i=0;i<Natoms;i++)
@@ -1207,7 +1207,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
       if (QMMMData[i].PBRegion)
       {
         /*Modify the charge to force charge balance with the boundaries*/
-        double qi = QMMMData[i].MP[bead].q; 
+        double qi = QMMMData[i].MP[bead].q;
         vector<int> Boundaries;
         Boundaries = TraceBoundary(QMMMData,i,mystat,logFile);
         double qnew = qi;
@@ -1232,7 +1232,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
 
 /*Start: Hatice
  * input restraints*/
-  
+
   if (QMMM or (Nfreeze > 0))
   {
     ofile << '\n';
@@ -1248,7 +1248,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
             /*ofile << "active ";*/
             ofile << "restrain-position ";
             ofile << setw(6) << (QMMMData[i].id+1);
-	    ofile << " ";
+	          ofile << " ";
             ofile << LICHEMFormFloat(QMMMData[i].P[bead].x,12);
             ofile << " ";
             ofile << LICHEMFormFloat(QMMMData[i].P[bead].y,12);
@@ -1315,7 +1315,7 @@ void TINKEROptRestrainMPIWrite(vector<QMMMAtom>& QMMMData,
 
 void TINKERForcesMPIRead(vector<QMMMAtom>& QMMMData, VectorXd& forces,
                     QMMMSettings& QMMMOpts, int bead)
-{  
+{
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy settings from cout
   string dummy; //Generic string
@@ -1328,7 +1328,7 @@ void TINKERForcesMPIRead(vector<QMMMAtom>& QMMMData, VectorXd& forces,
   //Read derivatives
   bool gradDone = 0;
   double Emm=0.0;
-  
+
   while ((!MMGrad.eof()) and MMGrad.good() and (!gradDone))
   {
     getline(MMGrad,dummy);
@@ -1397,7 +1397,7 @@ void TINKERPolForcesMPIRead(vector<QMMMAtom>& QMMMData, VectorXd& forces,
   call.copyfmt(cout); //Copy settings from cout
   string dummy; //Generic string
   double Emm = 0.0;
- 
+
   //Collect MM forces
   fstream MMGrad; //QMMM output
   //Open files
@@ -1468,8 +1468,8 @@ void TINKERPolForcesMPIRead(vector<QMMMAtom>& QMMMData, VectorXd& forces,
 };
 
 double TINKEREnergyMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
-                    int bead)  
-{  
+                    int bead)
+{
   stringstream call; //Stream for system calls and reading/writing files
   call.copyfmt(cout); //Copy settings from cout
   string dummy; //Generic string
@@ -1520,7 +1520,7 @@ double TINKEREnergyMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
 };
 
 double TINKERPolEnergyMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts,
-                    int bead)  
+                    int bead)
 {
 
   stringstream call; //Stream for system calls and reading/writing files
@@ -1574,7 +1574,7 @@ double TINKERPolEnergyMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts
   }
   inFile.close();
   //Clean up files
-  
+
   if(!QMMMOpts.KeepFiles){
     call.str("");
     call << "rm -f";
@@ -1622,7 +1622,7 @@ void TINKEROptMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int be
   }
   inFile.close();
   //Clean up files
-  
+
   if(!QMMMOpts.KeepFiles){
     call.str("");
     call << "rm -f";
@@ -1640,7 +1640,7 @@ void TINKEROptMPIRead(vector<QMMMAtom>& QMMMData, QMMMSettings& QMMMOpts, int be
 /*-----------------------*/
 void TINKERForcesMPI(vector<int> mybead_list,
                   int mysize,int pathstart, int pathend)
-{ 
+{
 
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -1651,7 +1651,7 @@ void TINKERForcesMPI(vector<int> mybead_list,
   int myrank,wsize;
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
   MPI_Comm_size(MPI_COMM_WORLD, &wsize);
-  
+
   MPI_Status stat;
 
 
@@ -1675,7 +1675,7 @@ void TINKERForcesMPI(vector<int> mybead_list,
            break;
         }
 
-        /* input file */ 
+        /* input file */
         call.str("");
         call << "testgrad ";
         call << "LICHM_TINKERForces_" << p << ".xyz";
@@ -1713,11 +1713,11 @@ void TINKERForcesMPI(vector<int> mybead_list,
 
 
 
-}; 
+};
 
 void TINKERPolForcesMPI(vector<int> mybead_list,
                   int mysize,int pathstart, int pathend)
-{ 
+{
 
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -1728,7 +1728,7 @@ void TINKERPolForcesMPI(vector<int> mybead_list,
   int myrank,wsize;
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
   MPI_Comm_size(MPI_COMM_WORLD, &wsize);
-  
+
   MPI_Status stat;
 
   for(int jj=0; jj<mysize;jj++)
@@ -1751,7 +1751,7 @@ void TINKERPolForcesMPI(vector<int> mybead_list,
            break;
         }
 
-        /* input file */ 
+        /* input file */
         call.str("");
         call << "testgrad ";
         call << "LICHM_TINKERPolForces_" << p << ".xyz";
@@ -1788,12 +1788,12 @@ void TINKERPolForcesMPI(vector<int> mybead_list,
 
 
 
-};/* finish run */ 
+};/* finish run */
 
 
 void TINKEREnergyMPI(vector<int> mybead_list,
-                     int mysize,int pathstart, int pathend)  
-{  
+                     int mysize,int pathstart, int pathend)
+{
 
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -1804,7 +1804,7 @@ void TINKEREnergyMPI(vector<int> mybead_list,
   int myrank,wsize;
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
   MPI_Comm_size(MPI_COMM_WORLD, &wsize);
-  
+
   MPI_Status stat;
 
   for(int jj=0; jj<mysize;jj++)
@@ -1827,7 +1827,7 @@ void TINKEREnergyMPI(vector<int> mybead_list,
            break;
         }
 
-        /* input file */ 
+        /* input file */
         call.str("");
         call << "analyze LICHM_TINKEREnergy_";
         call << p << ".xyz E > LICHM_TINKEREnergy_";
@@ -1866,12 +1866,12 @@ void TINKEREnergyMPI(vector<int> mybead_list,
 
 
 
-};/* finish run */ 
+};/* finish run */
 
 
 void TINKERPolEnergyMPI(vector<int> mybead_list,
-                     int mysize,int pathstart, int pathend)  
-{  
+                     int mysize,int pathstart, int pathend)
+{
 
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -1882,7 +1882,7 @@ void TINKERPolEnergyMPI(vector<int> mybead_list,
   int myrank,wsize;
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
   MPI_Comm_size(MPI_COMM_WORLD, &wsize);
-  
+
   MPI_Status stat;
 
   for(int jj=0; jj<mysize;jj++)
@@ -1905,7 +1905,7 @@ void TINKERPolEnergyMPI(vector<int> mybead_list,
            break;
         }
 
-        /* input file */ 
+        /* input file */
         call.str("");
         call << "analyze LICHM_TINKERPolEnergy_";
         call << p << ".xyz E > LICHM_TINKERPolEnergy_";
@@ -1943,12 +1943,12 @@ void TINKERPolEnergyMPI(vector<int> mybead_list,
 
 
 
-};/* finish run */ 
+};/* finish run */
 
 void TINKEROptMPI(vector<int> mybead_list,
                   int mysize,int pathstart, int pathend,
                   QMMMSettings& QMMMOpts)
-{ 
+{
 
   //Function for calculating the forces on a set of atoms
   stringstream call; //Stream for system calls and reading/writing files
@@ -1959,7 +1959,7 @@ void TINKEROptMPI(vector<int> mybead_list,
   int myrank,wsize;
   MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
   MPI_Comm_size(MPI_COMM_WORLD, &wsize);
-  
+
   MPI_Status stat;
 
 
@@ -1983,7 +1983,7 @@ void TINKEROptMPI(vector<int> mybead_list,
            break;
         }
 
-        /* input file */ 
+        /* input file */
         call.str("");
         call << "minimize LICHM_TINKEROpt_";
         call << p << ".xyz ";

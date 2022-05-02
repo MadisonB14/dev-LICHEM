@@ -12,7 +12,7 @@ CXX= g++
 CXXFLAGS= -static -O3 -fopenmp
 
 ### Install directory ### 
-INSTALLBIN=/home/madison/dev-lichem/dev-LICHEM/bin
+INSTALLBIN=/home/madison/bin/dev-LICHEM/bin
 
 ### Libarary settings ###
 

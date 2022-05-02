@@ -203,7 +203,8 @@ void ReadArgs(int&,char**&,fstream&,fstream&,fstream&,fstream&,fstream&,fstream&
 void ReadLICHEMInput(fstream&,fstream&,fstream&,
                      vector<QMMMAtom>&,QMMMSettings&,fstream&,int&);
 
-void RotateTINKCharges(vector<QMMMAtom>&,QMMMSettings&,int);
+//void RotateTINKCharges(vector<QMMMAtom>&,QMMMSettings&,int);
+void RotateTINKCharges(vector<QMMMAtom>&,int);
 
 OctCharges SphHarm2Charges(RedMPole);
 
